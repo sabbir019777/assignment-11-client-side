@@ -1,4 +1,4 @@
-// src/components/AdminLayout.jsx
+
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 
@@ -14,7 +14,7 @@ const AdminLayout = () => {
       <div className="flex flex-col justify-center items-center h-screen bg-[#01040D]">
         <div className="w-16 h-16 border-4 border-[#40E0D0] border-t-transparent rounded-full animate-spin mb-4 shadow-[0_0_15px_#40E0D0]"></div>
         <p className="text-[#40E0D0] font-black uppercase tracking-[0.3em] animate-pulse text-xs">
-          Initializing Systems...
+          Initializing System.......
         </p>
       </div>
     );
