@@ -19,7 +19,7 @@ const CommentSection = ({ comments = [], onAddComment, currentUser }) => {
     }
 
     // Prepare comment object matching backend
-    
+
     const commentData = {
       lessonId: currentUser.lessonId, 
       text: newComment,
@@ -95,7 +95,7 @@ const CommentSection = ({ comments = [], onAddComment, currentUser }) => {
           ))
         ) : (
           <p className="text-slate-400 italic">
-            No comments yet. Be the first to comment ✨
+            No comments yet. Be the first to comments ✨
           </p>
         )}
       </div>
