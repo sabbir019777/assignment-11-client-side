@@ -25,7 +25,7 @@ const FeaturedLessonCard = ({ lesson, user }) => {
       className="relative group h-[520px] w-full perspective-1000 cursor-pointer"
     >
       {/* ১. হোভার গ্লো কন্টেইনার (Hover Effect Box) */}
-      
+
       <div className="relative h-full w-full bg-[#050B18] rounded-[2.5rem] border border-white/10 overflow-hidden flex flex-col transition-all duration-700 ease-out group-hover:rotate-x-2 group-hover:rotate-y-[-2deg] group-hover:shadow-[0_0_50px_rgba(64,224,208,0.25)] group-hover:border-[#40E0D0]/50">
         
         {/* এনিমেটেড স্ক্যানার লাইন */}
@@ -116,7 +116,7 @@ const FeaturedLessonCard = ({ lesson, user }) => {
             </div>
           </div>
           <h4 className="text-white font-black uppercase tracking-[0.4em] text-lg mb-2">ACCESS DENIED</h4>
-          <p className="text-red-500/60 text-[9px] mb-8 font-mono uppercase text-center px-10">Neural link failed. Upgrade required to decrypt this lesson.</p>
+          <p className="text-red-500/60 text-[9px] mb-8 font-mono uppercase text-center px-10">Neural link failed. Upgrades required to decrypt this lesson.</p>
           
           <button 
             onClick={(e) => { e.stopPropagation(); navigate("/pricing"); }}
