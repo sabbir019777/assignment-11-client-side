@@ -146,7 +146,7 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
                   bg-emerald-500/10 text-emerald-500 border border-emerald-500/20
                   hover:bg-emerald-500 hover:text-white transition-all"
               >
-                <FaCheckCircle /> Resolve
+                <FaCheckCircle /> Resolved
               </button>
             )}
 
@@ -164,7 +164,7 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
       </tr>
 
       {/* Modal - Adjusted prop name to match your ManageUsers logic */}
-      
+
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
