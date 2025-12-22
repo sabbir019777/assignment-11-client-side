@@ -92,7 +92,7 @@ const AdminProfile = () => {
                   {user.displayName}
                 </h2>
                 <p className="text-[#40E0D0] font-mono text-sm tracking-widest bg-[#40E0D0]/10 px-4 py-1 rounded-full border border-[#40E0D0]/20 inline-block">
-                  Level 01_OPERATOR
+                  Level 01_OPERATORs
                 </p>
                 <div className="pt-6 grid grid-cols-2 gap-4 w-full text-left">
                   <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
