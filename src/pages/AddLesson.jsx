@@ -102,7 +102,7 @@ const AddLesson = () => {
   creatorId: user.uid,
   creatorName: user.displayName || "Unknown Creator",
   creatorPhoto: user.photoURL || "default_photo_url",
-  isReviewed: true, // ✅ এই লাইনটি অবশ্যই যোগ করবেন, যাতে সাথে সাথে পাবলিক পেজে দেখা যায়
+  isReviewed: true,
   createdAt: new Date(),
 };
       const createPromise = createLesson(lessonData);
