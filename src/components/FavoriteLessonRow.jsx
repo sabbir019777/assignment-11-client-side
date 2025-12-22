@@ -77,7 +77,7 @@ const FavoriteLessonRow = ({ user }) => {
           <div className="flex items-center gap-3 justify-center">
             <span className="w-1.5 h-1.5 bg-cyan-500 animate-ping"></span>
             <p className="text-cyan-400 tracking-[0.5em] text-[10px] font-black uppercase">
-             Loading...Favourites
+             Loading.....Favourites
             </p>
           </div>
           
