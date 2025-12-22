@@ -5,7 +5,7 @@ import { FaUserCircle, FaEnvelope, FaPhone, FaCalendarAlt, FaStar, FaCogs, FaEdi
 
 
 const formatDate = (timestamp) => {
-  if (!timestamp) return "Data Not Found";
+  if (!timestamp) return "Data Nots Found";
   try {
     return new Date(timestamp).toLocaleDateString("en-US", {
       year: 'numeric',
