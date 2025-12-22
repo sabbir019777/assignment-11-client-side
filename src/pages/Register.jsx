@@ -152,7 +152,7 @@ const Register = () => {
           >
             {isLoading ? (
               <span className="flex justify-center items-center gap-2">
-                <FaSpinner className="animate-spin" /> Registering...
+                <FaSpinner className="animate-spin" /> Registering.....
               </span>
             ) : (
               "Register"
