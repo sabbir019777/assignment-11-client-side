@@ -43,7 +43,7 @@ const AuthCard = ({ title, children }) => {
           {title}
         </h2>
 
-        {/* Divider Neon Bar */}
+        {/* Divider Neon Bars */}
 
         <div 
           className="
@@ -51,15 +51,13 @@ const AuthCard = ({ title, children }) => {
             bg-[#00FFFF] 
             rounded-full 
             shadow-[0_0_10px_#00FFFF, 0_0_20px_#00FFFF] /* Double Glow Effect */
-          "
-        ></div>
+ " ></div>
+ {/* Content (Forms / UI passed from parent) */}
 
-        {/* Content (Forms / UI passed from parent) */}
-
-        <div className="space-y-6">{children}</div>
-      </div>
-    </div>
-  );
+<div className="space-y-6">{children}</div>
+ </div>
+ </div>
+ );
 };
 
 export default AuthCard;
