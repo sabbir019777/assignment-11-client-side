@@ -108,7 +108,7 @@ const Login = () => {
           >
             {isLoading ? (
               <span className="flex justify-center items-center gap-2">
-                <FaSpinner className="animate-spin" /> Logging in...
+                <FaSpinner className="animate-spin" /> Logging in.....
               </span>
             ) : (
               "Log In"
