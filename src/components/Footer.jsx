@@ -245,7 +245,7 @@ const Footer = () => {
               About
             </Link>
             <Link className="hover:text-fuchsia-400 transition" to="/contact">
-              Contact
+              Contacts
             </Link>
             <Link className="hover:text-fuchsia-400 transition" to="/sitemap">
               Sitemap
