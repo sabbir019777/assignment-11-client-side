@@ -83,7 +83,7 @@ const Pricing = () => {
 
     setProcessing(true);
     try {
-      toast.loading("🚀 Processing upgrade...", { id: "payment" });
+      toast.loading("🚀 Processing upgrades...", { id: "payment" });
 
       const apiPromise = axiosInstance.post("/users/upgrade");
       const timer = new Promise((res) => setTimeout(res, 2500)); 
