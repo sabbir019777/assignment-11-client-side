@@ -72,14 +72,14 @@ const AdminUserRow = ({ userData, onDeleted, onRoleUpdated }) => {
               disabled={loading}
               className="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-black uppercase px-4 py-2 rounded-xl transition-all disabled:opacity-50"
             >
-              Delete
+              Deleted
             </button>
           </div>
         </td>
       </tr>
 
       {/* Confirm Delete Modal */}
-      
+
       {showDeleteModal && (
         <ConfirmDeleteModal
           title="Security Authorization"
