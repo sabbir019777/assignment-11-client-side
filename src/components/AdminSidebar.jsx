@@ -41,7 +41,7 @@ const AdminSidebar = () => {
       <div className="relative w-20 group-hover:w-72 h-full bg-[#0a0f18]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23, 1, 0.32, 1)] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
         
         {/* Futuristic Background Glow */}
-        
+
         <div className="absolute inset-0 bg-gradient-to-b from-[#40E0D0]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
         {/* ১. লোগো সেকশন */}
@@ -53,7 +53,7 @@ const AdminSidebar = () => {
           <div className="ml-5 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
             <span className="text-xs font-bold tracking-[0.3em] text-[#40E0D0]/60 uppercase">Digital</span>
             <h2 className="text-xl font-black tracking-tighter text-white">
-              Life <span className="text-[#40E0D0] drop-shadow-[0_0_8px_#40E0D0]">Lesson</span>
+              Life <span className="text-[#40E0D0] drop-shadow-[0_0_8px_#40E0D0]">Lessons</span>
             </h2>
           </div>
         </div>
