@@ -120,7 +120,7 @@ const MyLessons = () => {
             </div>
           </div>
           <h2 className="text-2xl md:text-3xl font-mono tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400 animate-pulse">
-            LOADING_MyLesson...
+            LOADING_MyLesson.....
           </h2>
           <div className="w-48 h-1 bg-gray-800 mt-4 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 animate-progress-load"></div>
