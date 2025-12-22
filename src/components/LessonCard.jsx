@@ -52,7 +52,7 @@ const LessonCard = ({
           bg-black/70 backdrop-blur-sm p-4 rounded-3xl">
           <FaLock size={36} className="mb-2 text-yellow-400 drop-shadow-[0_0_8px_#FFD700]" />
           <p className="font-bold text-lg text-white drop-shadow-lg">Premium Lesson</p>
-          <p className="text-sm text-gray-300">Upgrade to view</p>
+          <p className="text-sm text-gray-300">Upgrades to view</p>
         </div>
       )}
 
