@@ -71,7 +71,7 @@ const MostSavedLessonCard = ({ lesson, user, onSaveLesson }) => {
               bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500
               text-black shadow-[0_0_25px_#FFD70088] hover:scale-110 transition"
             >
-              Upgrade to Unlock
+              Upgrades to Unlock
             </Link>
           </div>
         )}
