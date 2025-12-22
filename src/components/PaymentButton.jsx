@@ -102,7 +102,7 @@ const PaymentButton = ({
         </svg>
 
         <span className="flex flex-col leading-4 text-left">
-          <span className="text-sm">Upgrade to Premium</span>
+          <span className="text-sm">Upgrades to Premium</span>
           <span className="text-xs opacity-90">One-time ৳{priceTaka} — Lifetime</span>
         </span>
 
