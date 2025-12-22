@@ -278,7 +278,7 @@ const Home = () => {
                 <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-[#FF00FF] to-transparent rounded-full shadow-[0_0_10px_#FF00FF]"></div>
               </div>
               <p className="mt-4 text-gray-400 font-medium tracking-[0.2em] uppercase text-xs md:text-sm">
-                Champions of the Wisdom Network
+                Champions of the Wisdoms Network
               </p>
             </div>
           </div>

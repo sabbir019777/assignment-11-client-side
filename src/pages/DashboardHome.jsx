@@ -99,7 +99,7 @@ const DashboardHome = () => {
           <div className="absolute top-0 left-0 w-full h-full border-4 border-t-indigo-500 rounded-full animate-spin"></div>
         </div>
         <p className="mt-4 text-indigo-400 font-medium animate-pulse tracking-widest">
-          INITIALIZING INTERFACE...
+          INITIALIZING INTERFACE......
         </p>
       </div>
     );
