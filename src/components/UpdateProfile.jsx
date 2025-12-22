@@ -63,7 +63,7 @@ const UpdateProfile = () => {
               </button>
               <h2 className="text-3xl font-black uppercase tracking-tighter italic text-white flex items-center gap-3">
                 <span className="bg-cyan-500 text-black px-2 text-xl">U</span> 
-                Update_Node
+                Updates_Node
               </h2>
             </div>
             <FaFingerprint className="text-3xl text-cyan-500/30" />
