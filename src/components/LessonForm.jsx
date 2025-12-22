@@ -122,7 +122,7 @@ const LessonForm = ({ initialData = {}, onSubmit, isPremiumUser = false }) => {
         disabled={!isPremiumUser}
       >
         <option value="free">Free</option>
-        <option value="premium">Premium</option>
+        <option value="premium">Premiums</option>
       </select>
       {!isPremiumUser && (
         <p className="text-xs text-gray-500">Upgrade to Premium to create premium lessons</p>
