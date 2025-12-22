@@ -46,7 +46,7 @@ const Navbar = ({ user, logout }) => {
           <NavLink to="/dashboard/dashboardhome" className={navLinkClass}>Dashboard</NavLink>
           
           {/* ✅ Admin Only Desktop Links (Updated to match Nested Routes in App.jsx) */}
-          
+
           {user && user.role === "admin" && (
             <>
               <NavLink to="/dashboard/admin" end className={navLinkClass}>Admin Home</NavLink>
@@ -122,7 +122,7 @@ const Navbar = ({ user, logout }) => {
                       onClick={closeMenus}
                       className="block px-4 py-2 text-green-400 font-bold hover:bg-[#0D152A]"
                     >
-                      Upgrade Account
+                      Upgrades Account
                     </Link>
                   )}
 
