@@ -69,7 +69,7 @@ const HeroSlider = ({ slides = [] }) => {
               
               {/* Tech Badge */}
               <div className="mb-6 flex items-center gap-2 px-4 py-1 rounded-full bg-[#40E0D0]/10 border border-[#40E0D0]/30 text-[#40E0D0] text-xs font-mono tracking-widest animate-pulse">
-                <FaShieldAlt /> SYSTEM_LOADED: SLIDE_0{index + 1}
+                <FaShieldAlt /> SYSTEMS_LOADED: SLIDE_0{index + 1}
               </div>
 
               {/* Title with Glitchy Look */}
