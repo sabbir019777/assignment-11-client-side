@@ -80,7 +80,7 @@ const AdminHouse = () => {
           <div className="w-20 h-20 border-r-2 border-b-2 border-cyan-400 rounded-full animate-spin"></div>
           <FaMicrochip className="absolute text-cyan-400 text-xl animate-pulse" />
         </div>     
-        <p className="mt-10 text-cyan-400 font-mono text-[10px] tracking-[0.7em] animate-pulse uppercase">Link Established. Syncing...</p>
+        <p className="mt-10 text-cyan-400 font-mono text-[10px] tracking-[0.7em] animate-pulse uppercase">Link Established. Syncing.....</p>
       </div>
     );
   }
@@ -204,7 +204,7 @@ const StatCard = ({ label, value, icon, color }) => {
     <div className={`relative group p-8 rounded-[2.5rem] bg-white/[0.02] border ${colorMap[color]} backdrop-blur-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2`}>
 
       {/* Scan Line Animation */}
-      
+
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent -translate-y-full group-hover:animate-scan"></div>
       
       <div className="relative z-10">
