@@ -104,7 +104,7 @@ const ManageLessons = () => {
               <span className="text-[10px] font-black tracking-[0.5em] text-gray-500 uppercase">System Core / Lessons</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">
-              MANAGE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#40E0D0] to-blue-500 italic">DATABASE</span>
+              MANAGES <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#40E0D0] to-blue-500 italic">DATABASE</span>
             </h1>
           </div>
 
