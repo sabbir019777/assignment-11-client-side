@@ -345,38 +345,6 @@ const DashboardHome = () => {
                   <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></div>
                 </span>
               </button>
-
-<div className="flex justify-center items-center mt-12 mb-8">
-  <button
-    onClick={() => navigate("/dashboard/admin")}
-    className="group relative px-12 py-5 bg-transparent border-2 border-indigo-500/50 rounded-2xl overflow-hidden transition-all duration-500 hover:border-indigo-400 hover:shadow-[0_0_35px_rgba(99,102,241,0.4)]"
-  >
-    {/* Futuristic Shimmer Light Effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none"></div>
-    
-    <span className="relative z-10 flex items-center gap-4 text-indigo-400 group-hover:text-white transition-colors duration-300">
-      {/* Icon with background */}
-      <div className="p-2 bg-indigo-500/10 rounded-lg group-hover:bg-indigo-500 transition-colors">
-        <FaCrown className="text-xl group-hover:rotate-12 transition-transform" />
-      </div>
-      
-      {/* Text with letter spacing */}
-      <span className="font-black tracking-[0.25em] text-sm uppercase">
-        Launch Admin Panel
-      </span>
-
-      {/* Pulsing Status Indicator */}
-      <div className="flex h-2 w-2 relative">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500 shadow-[0_0_10px_#6366f1]"></span>
-      </div>
-    </span>
-
-    {/* Background Slide Fill on Hover */}
-    <div className="absolute inset-0 bg-indigo-600 -z-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-  </button>
-</div>
-
             </div>
           </div>
         </div>

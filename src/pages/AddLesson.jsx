@@ -57,10 +57,10 @@ const AddLesson = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   
-  // New State for Initial Page Loading
+
   const [initialLoading, setInitialLoading] = useState(true);
 
-  // Effect for 3-second Futuristic Initial Loading
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setInitialLoading(false);
@@ -123,7 +123,7 @@ const AddLesson = () => {
     navigate("/dashboard/my-lessons");
   };
 
-  // Futuristic Full Screen Initial Loader
+  
   if (initialLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center overflow-hidden">
@@ -145,7 +145,6 @@ const AddLesson = () => {
     );
   }
 
-  // Loading while Submitting
   if (loading) return <LoadingSpinner label="Encoding Lesson to Grid..." />;
 
   return (

@@ -6,7 +6,8 @@ import { auth } from "../Firebase/Firebase.config";
 // Base URL
 // --------------------
 const BASE_URL = (
-  import.meta.env.VITE_APP_API_URL || "http://localhost:5000"
+  import.meta.env.VITE_APP_API_URL ||
+  "https://digital-life-lesson-flame.vercel.app"
 ).replace(/\/$/, "");
 
 // --------------------
@@ -25,7 +26,7 @@ axiosInstance.interceptors.request.use(
   async (config) => {
     const current = auth?.currentUser;
     if (current) {
-      const token = await current.getIdToken(); 
+      const token = await current.getIdToken();
       config.headers.Authorization = `Bearer ${token}`;
     } else {
       const localToken = localStorage.getItem("token");
@@ -71,9 +72,8 @@ export const registerOrSyncUser = async (userData) => {
   }
 };
 export const getUserStatus = async (email) => {
-  if (!email) return null; 
+  if (!email) return null;
   try {
-  
     const res = await axiosInstance.get(`/users/status?email=${email}`);
     return res.data || {};
   } catch (error) {
@@ -229,9 +229,12 @@ export const addComment = async (lessonId, commentData) => {
 export const toggleFavorite = async (lessonId, userId) => {
   if (!lessonId) throw new Error("lessonId is required");
   try {
-    const res = await axiosInstance.patch(`/lessons/${lessonId}/toggle-favorite`, { 
-      userId 
-    });
+    const res = await axiosInstance.patch(
+      `/lessons/${lessonId}/toggle-favorite`,
+      {
+        userId,
+      }
+    );
     return res.data || {};
   } catch (error) {
     handleError(error, "toggleFavorite");
@@ -268,7 +271,8 @@ export const toggleLike = async (lessonId) => {
 // REPORT LESSON
 // --------------------
 export const reportLesson = async (lessonId, reportData) => {
-  if (!lessonId) throw new Error("reportLesson API error: lessonId is required");
+  if (!lessonId)
+    throw new Error("reportLesson API error: lessonId is required");
   try {
     const res = await axiosInstance.post(
       `/lessons/${lessonId}/report`,
@@ -282,7 +286,8 @@ export const reportLesson = async (lessonId, reportData) => {
 };
 
 export const deleteComment = async (commentId) => {
-  if (!commentId) throw new Error("deleteComment API error: commentId is required");
+  if (!commentId)
+    throw new Error("deleteComment API error: commentId is required");
   try {
     const res = await axiosInstance.delete(`/comments/${commentId}`);
     return res.data || {};
@@ -311,10 +316,9 @@ export const uploadImage = async (formData) => {
 // ADMIN DASHBOARD API (Fixed routes to match your server.js)
 // --------------------------------------------------------
 
-
 export const getAllUsers = async () => {
   try {
-    const res = await axiosInstance.get("/users/all"); 
+    const res = await axiosInstance.get("/users/all");
     return res.data || [];
   } catch (error) {
     handleError(error, "getAllUsers");
@@ -322,10 +326,11 @@ export const getAllUsers = async () => {
   }
 };
 
-
 export const updateUserRole = async (userId, newRole) => {
   try {
-    const res = await axiosInstance.put(`/users/${userId}/role`, { role: newRole });
+    const res = await axiosInstance.put(`/users/${userId}/role`, {
+      role: newRole,
+    });
     return res.data || {};
   } catch (error) {
     handleError(error, "updateUserRole");
@@ -345,7 +350,10 @@ export const deleteUser = async (userId) => {
 
 export const toggleFeatured = async (lessonId, isFeatured) => {
   try {
-    const res = await axiosInstance.patch(`/admin/lessons/featured/${lessonId}`, { isFeatured });
+    const res = await axiosInstance.patch(
+      `/admin/lessons/featured/${lessonId}`,
+      { isFeatured }
+    );
     return res.data || {};
   } catch (error) {
     handleError(error, "toggleFeatured");
@@ -353,10 +361,9 @@ export const toggleFeatured = async (lessonId, isFeatured) => {
   }
 };
 
-
 export const getReportedLessons = async () => {
   try {
-    const res = await axiosInstance.get("/admin/lessons?status=reported"); 
+    const res = await axiosInstance.get("/admin/lessons?status=reported");
     return res.data || [];
   } catch (error) {
     handleError(error, "getReportedLessons");
@@ -366,7 +373,9 @@ export const getReportedLessons = async () => {
 
 export const resolveReport = async (lessonId) => {
   try {
-    const res = await axiosInstance.patch(`/admin/lessons/resolve-report/${lessonId}`);
+    const res = await axiosInstance.patch(
+      `/admin/lessons/resolve-report/${lessonId}`
+    );
     return res.data || {};
   } catch (error) {
     handleError(error, "resolveReport");
@@ -374,12 +383,9 @@ export const resolveReport = async (lessonId) => {
   }
 };
 
-
-
-
 export const getAdminLessons = async () => {
   try {
-    const res = await axiosInstance.get("/admin/lessons"); 
+    const res = await axiosInstance.get("/admin/lessons");
     return res.data || [];
   } catch (error) {
     handleError(error, "getAdminLessons");
@@ -387,37 +393,32 @@ export const getAdminLessons = async () => {
   }
 };
 
-
-
 // --------------------------------------------------------
-// ADMIN DASHBOARD STATS 
+// ADMIN DASHBOARD STATS
 // --------------------------------------------------------
 
 export const getAdminStats = async () => {
   try {
- 
     const [users, lessons, reports, today] = await Promise.all([
       axiosInstance.get("/admin/total-users"),
       axiosInstance.get("/admin/total-lessons"),
       axiosInstance.get("/admin/reported-lessons-count"),
-      axiosInstance.get("/admin/todays-lessons")
+      axiosInstance.get("/admin/todays-lessons"),
     ]);
-    
+
     return {
       totalUsers: users.data?.total || 0,
       totalLessons: lessons.data?.total || 0,
       totalReported: reports.data?.total || 0,
       todaysLessons: today.data?.total || 0,
       last7DaysUsers: users.data?.last7Days || [],
-      last7DaysLessons: lessons.data?.last7Days || []
+      last7DaysLessons: lessons.data?.last7Days || [],
     };
   } catch (error) {
     handleError(error, "getAdminStats");
     return null;
   }
 };
-
-
 
 export const adminDeleteLesson = async (lessonId) => {
   try {
@@ -428,6 +429,5 @@ export const adminDeleteLesson = async (lessonId) => {
     throw error;
   }
 };
-
 
 export { axiosInstance };

@@ -4,10 +4,12 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-/* Components */
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
+
+import AdminSidebar from "./components/AdminSidebar"; 
 
 /* Pages */
 import Home from "./pages/Home";
@@ -42,11 +44,14 @@ function AppRoutes() {
   return (
     <HashRouter>
       <Toaster position="top-right" reverseOrder={false} />
+      
       <Navbar user={user} logout={logout} />
+
+     
+      <AdminSidebar />
 
       <Routes>
         {/* --- ১. (Public Routes) --- */}
-
         <Route path="/" element={<Home user={user} />} />
         <Route path="/public-lessons" element={<PublicLessons user={user} />} />
         <Route path="/lessons/:id" element={<LessonDetails user={user} />} />
@@ -54,35 +59,23 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
 
         {/* ---(Private User Routes) --- */}
-
         <Route path="/dashboard/dashboardhome" element={<PrivateRoute user={user}><DashboardHome /></PrivateRoute>} />
-
         <Route path="/dashboard/add-lesson" element={<PrivateRoute user={user}><AddLesson /></PrivateRoute>} />
-
         <Route path="/dashboard/my-lessons" element={<PrivateRoute user={user}><MyLessons user={user} /></PrivateRoute>} />
-
         <Route path="/dashboard/favourites" element={<PrivateRoute user={user}><div className="min-h-screen bg-[#02040A]"><FavoriteLessonRow user={user} /></div></PrivateRoute>} />
-
         <Route path="/dashboard/update-lesson/:id" element={<PrivateRoute user={user}><UpdateLesson /></PrivateRoute>} />
-
         <Route path="/dashboard/profile" element={<PrivateRoute user={user}><Profile user={user} /></PrivateRoute>} />
-
         <Route path="/dashboard/update-profile" element={<PrivateRoute user={user}><UpdateProfile /></PrivateRoute>} />
-
         <Route path="/pricing" element={<PrivateRoute user={user}><Pricing /></PrivateRoute>} />
 
-       
-   
-{/* admin */}
-
-
-<Route path="/dashboard/admin" element={<AdminLayout />}>
-    <Route index element={<AdminHouse />} /> 
-    <Route path="users" element={<ManageUsers />} /> 
-    <Route path="lessons" element={<ManageLessons />} /> 
-    <Route path="reports" element={<ReportedLessonsPage />} /> 
-    <Route path="profile" element={<AdminProfile />} /> 
-</Route>
+        {/* admin routes */}
+        <Route path="/dashboard/admin" element={<AdminLayout />}>
+           <Route index element={<AdminHouse />} /> 
+           <Route path="users" element={<ManageUsers />} /> 
+           <Route path="lessons" element={<ManageLessons />} /> 
+           <Route path="reports" element={<ReportedLessonsPage />} /> 
+           <Route path="profile" element={<AdminProfile />} /> 
+        </Route>
 
         {/* --- loading --- */}
         <Route path="/loading" element={<LoadingPage />} />

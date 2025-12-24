@@ -1,8 +1,8 @@
 # Digital Life Lessons 🌱
 
 🔗 **Live Website:** https://your-live-site-link  
-💻 **Client Repository:** https://github.com/your-username/client-repo  
-🖥️ **Server Repository:** https://github.com/your-username/server-repo  
+💻 **Client Repository:** https://github.com/sabbir019777/assignment-11-client-side.git
+🖥️ **Server Repository:** https://github.com/sabbir019777/assignment-11-server-side.git
 
 ---
 

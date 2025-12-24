@@ -13,7 +13,8 @@ import {
 import toast from "react-hot-toast";
 
 const AdminSidebar = () => {
-  const { logout } = useAuth(); 
+  // ১. Auth Context থেকে user এবং loading ডাটা আনা হচ্ছে
+  const { user, logout, loading } = useAuth(); 
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,20 +36,37 @@ const AdminSidebar = () => {
     }
   };
 
+  // 🔥🔥🔥 গেম চেঞ্জার লজিক (নিচে দেখুন) 🔥🔥🔥
+
+  // ১. যদি ডাটা লোড হতে থাকে, তবে সাইডবার দেখানোর দরকার নেই (ফ্লিকানি বন্ধ হবে)
+  if (loading) return null;
+
+  // ২. মাস্টার অ্যাডমিন চেক (হার্ডকোড করা ইমেইল)
+  const masterAdminEmail = "admins@gmail.com";
+  const isMasterAdmin = user?.email?.toLowerCase() === masterAdminEmail.toLowerCase();
+
+  // ৩. ডাটাবেজ রোল চেক (অ্যাডমিন রোল)
+  const isDbAdmin = user?.role === "admin";
+
+  // ৪. ফাইনাল চেক: যদি ইউজার না থাকে অথবা (মাস্টার অ্যাডমিন না হয় এবং ডাটাবেজ অ্যাডমিনও না হয়)
+  // তাহলে সোজা NULL রিটার্ন করবে (মানে কিছুই দেখাবে না)
+  if (!user || (!isMasterAdmin && !isDbAdmin)) {
+    return null;
+  }
+
+  // ৫. যদি ওপরের শর্ত পার হয়, তার মানে ইনি অ্যাডমিন। এখন সাইডবার রেন্ডার হবে।
   return (
     <div className="fixed left-4 top-4 bottom-4 z-50 flex group">
       
       <div className="relative w-20 group-hover:w-72 h-full bg-[#0a0f18]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23, 1, 0.32, 1)] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
         
         {/* Futuristic Background Glow */}
-
         <div className="absolute inset-0 bg-gradient-to-b from-[#40E0D0]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-        {/* ১. লোগো সেকশন */}
-
+        {/* লোগো সেকশন */}
         <div className="h-28 flex items-center px-6 shrink-0">
           <div className="relative min-w-[48px] h-12 flex justify-center items-center bg-gradient-to-tr from-[#40E0D0]/20 to-transparent rounded-xl border border-[#40E0D0]/30 shadow-[0_0_15px_rgba(64,224,208,0.2)]">
-             <RiShieldFlashLine className="text-2xl text-[#40E0D0] animate-pulse" />
+              <RiShieldFlashLine className="text-2xl text-[#40E0D0] animate-pulse" />
           </div>
           <div className="ml-5 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
             <span className="text-xs font-bold tracking-[0.3em] text-[#40E0D0]/60 uppercase">Digital</span>
@@ -58,8 +76,7 @@ const AdminSidebar = () => {
           </div>
         </div>
 
-        {/* ২. ন্যাভিগেশন লিংকস */}
-
+        {/* ন্যাভিগেশন লিংকস */}
         <nav className="flex-1 px-3 space-y-2 overflow-y-auto no-scrollbar relative">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -87,8 +104,7 @@ const AdminSidebar = () => {
           })}
         </nav>
 
-        {/* ৩. লগআউট সেকশন (নিচে প্যাডিং দিয়ে সাজানো) */}
-
+        {/* লগআউট সেকশন */}
         <div className="p-4 mt-auto">
           <button
             onClick={(e) => {
@@ -114,7 +130,7 @@ const AdminSidebar = () => {
               </span>
             </div>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover/btn:opacity-100 transition-all">
-               <div className="w-1 h-1 bg-red-500 rounded-full animate-ping" />
+                <div className="w-1 h-1 bg-red-500 rounded-full animate-ping" />
             </div>
           </button>
         </div>
