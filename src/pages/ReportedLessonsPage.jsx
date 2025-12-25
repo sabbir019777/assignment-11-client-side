@@ -33,7 +33,7 @@ const ReportedLessonsPage = () => {
   if (loading) return <LoadingPage message="Scanning for reported content..." />;
 
   return (
-    <div className="p-8 md:p-12 bg-yellow-900 min-h-screen text-gray-200 selection:bg-green-500/30 font-sans relative overflow-hidden">
+    <div className="p-8 md:p-12 bg-pink-800 min-h-screen text-gray-200 selection:bg-green-500/30 font-sans relative overflow-hidden">
       
       {/* Background Decorative Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-900/10 blur-[120px] rounded-full" />

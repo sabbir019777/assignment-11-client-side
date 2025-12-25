@@ -1,6 +1,7 @@
 // src/pages/admin/AdminProfile.jsx
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import useAuth from "../hooks/useAuth"; // সংশোধিত: ব্র্যাকেট ছাড়া এবং সঠিক পাথ
+import { axiosInstance } from "../utils/api"; // সংশোধিত: এপিআই থেকে সরাসরি ইমপোর্ট
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShieldCheck, Database, Flag, Activity, Clock, 
@@ -8,7 +9,8 @@ import {
 } from "lucide-react";
 
 const AdminProfile = () => {
-  const { user, axiosInstance } = useAuth();
+  // কনফ্লিক্ট এড়াতে useAuth থেকে axiosInstance বাদ দেওয়া হয়েছে কারণ উপরে ইমপোর্ট করা আছে
+  const { user } = useAuth(); 
   const [stats, setStats] = useState({
     totalLessons: 0,
     reportedLessons: 0,
@@ -31,7 +33,7 @@ const AdminProfile = () => {
       }
     };
     fetchStats();
-  }, [user, axiosInstance]);
+  }, [user]); // এখানে axiosInstance দেওয়ার প্রয়োজন নেই কারণ এটি ইমপোর্ট করা
 
   if (!user) return null;
 
@@ -39,7 +41,7 @@ const AdminProfile = () => {
     <div className="min-h-screen p-6 md:p-12 bg-green-900 text-gray-300 selection:bg-[#40E0D0]/30 overflow-hidden relative">
       
       {/* ব্যাকগ্রাউন্ড অ্যানিমেটেড গ্রিড এবং গ্লো */}
-      <div className="absolute inset-0 z-0 opactiy-20">
+      <div className="absolute inset-0 z-0 opacity-20">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#40E0D0]/10 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse delay-700" />
       </div>
@@ -180,7 +182,6 @@ const AdminProfile = () => {
         </div>
       </div>
 
-      {/* Tailwind CSS এর জন্য গ্লোবাল স্টাইল যোগ করতে হবে নিচের অ্যানিমেশনগুলোর জন্য */}
       <style jsx>{`
         @keyframes scan {
           0% { top: 0; }

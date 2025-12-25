@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext"; 
 import { 
@@ -8,15 +8,18 @@ import {
   RiFlagLine, 
   RiUserLine, 
   RiLogoutBoxRLine,
-  RiShieldFlashLine
+  RiShieldFlashLine,
+  RiMenu4Line, 
+  RiCloseLine  
 } from "react-icons/ri";
 import toast from "react-hot-toast";
 
 const AdminSidebar = () => {
-  // ১. Auth Context থেকে user এবং loading ডাটা আনা হচ্ছে
   const { user, logout, loading } = useAuth(); 
   const location = useLocation();
   const navigate = useNavigate();
+  
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard/admin", icon: <RiDashboard3Line /> },
@@ -36,107 +39,119 @@ const AdminSidebar = () => {
     }
   };
 
-  // 🔥🔥🔥 গেম চেঞ্জার লজিক (নিচে দেখুন) 🔥🔥🔥
-
-  // ১. যদি ডাটা লোড হতে থাকে, তবে সাইডবার দেখানোর দরকার নেই (ফ্লিকানি বন্ধ হবে)
   if (loading) return null;
 
-  // ২. মাস্টার অ্যাডমিন চেক (হার্ডকোড করা ইমেইল)
+  // অ্যাডমিন চেক এবং লগআউট করলে যেন অদৃশ্য হয়ে যায় সেই লজিক
   const masterAdminEmail = "admins@gmail.com";
-  const isMasterAdmin = user?.email?.toLowerCase() === masterAdminEmail.toLowerCase();
+  const isAdmin = user && (user.role === "admin" || user.email === masterAdminEmail);
 
-  // ৩. ডাটাবেজ রোল চেক (অ্যাডমিন রোল)
-  const isDbAdmin = user?.role === "admin";
+  if (!user || !isAdmin) return null;
 
-  // ৪. ফাইনাল চেক: যদি ইউজার না থাকে অথবা (মাস্টার অ্যাডমিন না হয় এবং ডাটাবেজ অ্যাডমিনও না হয়)
-  // তাহলে সোজা NULL রিটার্ন করবে (মানে কিছুই দেখাবে না)
-  if (!user || (!isMasterAdmin && !isDbAdmin)) {
-    return null;
-  }
-
-  // ৫. যদি ওপরের শর্ত পার হয়, তার মানে ইনি অ্যাডমিন। এখন সাইডবার রেন্ডার হবে।
   return (
-    <div className="fixed left-4 top-4 bottom-4 z-50 flex group">
-      
-      <div className="relative w-20 group-hover:w-72 h-full bg-[#0a0f18]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23, 1, 0.32, 1)] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+    <>
+      {/* মোবাইল টগল বাটন - Hamburger/Cross কালার সায়ান করা হয়েছে */}
+      <button 
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="fixed top-4 left-4 z-[60] md:hidden p-2.5 bg-white/10 border border-white/20 rounded-xl text-[#40E0D0] active:scale-95 transition-all shadow-lg"
+      >
+        {isMobileOpen ? (
+          <RiCloseLine size={22} className="text-gray-black" />
+        ) : (
+          <RiMenu4Line size={22} className="text-red-950" />
+        )}
+      </button>
+
+      {/* মোবাইল ওভারলে */}
+      {isMobileOpen && (
+        <div 
+          onClick={() => setIsMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-black/30 md:hidden transition-opacity duration-300"
+        />
+      )}
+
+      {/* মেইন সাইডবার কন্টেইনার */}
+      <div className={`
+        fixed z-50 flex group h-[calc(100vh-32px)]
+        top-4 bottom-4 
+        transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
         
-        {/* Futuristic Background Glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#40E0D0]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        /* মোবাইল মোড */
+        ${isMobileOpen ? 'left-4' : '-left-[120%]'} 
+        w-64 
 
-        {/* লোগো সেকশন */}
-        <div className="h-28 flex items-center px-6 shrink-0">
-          <div className="relative min-w-[48px] h-12 flex justify-center items-center bg-gradient-to-tr from-[#40E0D0]/20 to-transparent rounded-xl border border-[#40E0D0]/30 shadow-[0_0_15px_rgba(64,224,208,0.2)]">
-              <RiShieldFlashLine className="text-2xl text-[#40E0D0] animate-pulse" />
+        /* ডেক্সটপ স্লিম মোড */
+        md:left-4 
+        md:w-16 
+        md:hover:w-64 
+      `}>
+        
+        <div className="relative w-full h-full bg-[#0a0f18]/15 border border-white/10 rounded-[2rem] flex flex-col shadow-lg overflow-hidden hover:bg-[#0a0f18]/30 transition-all duration-700">
+          
+          <div className="absolute inset-0 bg-gradient-to-b from-[#40E0D0]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+          {/* লোগো সেকশন */}
+          <div className="h-20 flex items-center px-3 shrink-0">
+            <div className="relative min-w-[38px] h-[38px] flex justify-center items-center bg-[#40E0D0]/10 rounded-xl border border-white/20 shadow-md">
+                <RiShieldFlashLine className="text-xl text-[#40E0D0] animate-pulse" />
+            </div>
+            <div className="ml-4 flex flex-col md:opacity-0 md:group-hover:opacity-100 transition-all duration-500">
+              {/* Digital লোগো কালার সায়ান করা হয়েছে */}
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#40E0D0] uppercase">Digital</span>
+              <h2 className="text-base font-black tracking-tighter text-white whitespace-nowrap drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
+                Life <span className="text-[#40E0D0]">Lessons</span>
+              </h2>
+            </div>
           </div>
-          <div className="ml-5 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-            <span className="text-xs font-bold tracking-[0.3em] text-[#40E0D0]/60 uppercase">Digital</span>
-            <h2 className="text-xl font-black tracking-tighter text-white">
-              Life <span className="text-[#40E0D0] drop-shadow-[0_0_8px_#40E0D0]">Lessons</span>
-            </h2>
-          </div>
-        </div>
 
-        {/* ন্যাভিগেশন লিংকস */}
-        <nav className="flex-1 px-3 space-y-2 overflow-y-auto no-scrollbar relative">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`group/item flex items-center h-14 rounded-2xl transition-all duration-500 relative overflow-hidden ${
-                  isActive 
-                  ? "bg-gradient-to-r from-[#40E0D0]/20 to-transparent text-[#40E0D0] border-l-4 border-[#40E0D0]" 
-                  : "text-gray-400 hover:text-white hover:bg-white/5 border-l-4 border-transparent"
-                }`}
-              >
-                <div className={`min-w-[64px] flex justify-center text-2xl transition-transform duration-500 ${isActive ? 'scale-110' : 'group-hover/item:scale-110'}`}>
-                  {item.icon}
-                </div>
-                <span className="ml-2 opacity-0 group-hover:opacity-100 transition-all duration-500 text-[12px] font-bold uppercase tracking-widest whitespace-nowrap">
-                  {item.name}
-                </span>
-                {isActive && (
-                  <div className="absolute right-0 w-16 h-full bg-gradient-to-l from-[#40E0D0]/10 to-transparent" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+          {/* ন্যাভিগেশন লিংকস */}
+          <nav className="flex-1 px-2 space-y-1.5 overflow-y-auto no-scrollbar relative">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`group/item flex items-center h-11 rounded-xl transition-all duration-500 relative overflow-hidden ${
+                    isActive 
+                    ? "bg-[#40E0D0]/25 text-white border-l-4 border-[#40E0D0]" 
+                    : "text-gray-200 hover:text-white hover:bg-[#40E0D0]/10 border-l-4 border-transparent"
+                  }`}
+                >
+                  <div className={`min-w-[42px] flex justify-center text-xl transition-all duration-500 ${isActive ? 'text-[#40E0D0] scale-110' : 'group-hover/item:text-[#40E0D0] group-hover/item:scale-110'}`}>
+                    {item.icon}
+                  </div>
+                  <span className={`ml-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 text-[11px] font-bold uppercase tracking-widest whitespace-nowrap ${isActive ? 'text-white' : 'group-hover/item:text-[#40E0D0]'}`}>
+                    {item.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
 
-        {/* লগআউট সেকশন */}
-        <div className="p-4 mt-auto">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleLogout();
-            }}
-            className="relative w-full h-14 flex items-center group/btn overflow-hidden rounded-2xl transition-all duration-300 bg-gradient-to-r from-red-500/5 to-transparent hover:from-red-500/20 border border-red-500/10 hover:border-red-500/40"
-          >
-            <div className="absolute inset-0 bg-red-500/10 opacity-0 group-hover/btn:opacity-100 blur-xl transition-opacity duration-500" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-0 group-hover/btn:h-8 bg-red-500 transition-all duration-300 shadow-[0_0_15px_#ef4444]" />
-            <div className="relative min-w-[56px] flex justify-center items-center">
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/btn:opacity-100 group-hover/btn:scale-150 transition-all duration-500">
-                  <RiLogoutBoxRLine className="text-red-500/20 blur-[2px]" />
+          {/* লগআউট সেকশন */}
+          <div className="p-2.5 mt-auto">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLogout();
+              }}
+              className="relative w-full h-11 flex items-center group/btn overflow-hidden rounded-xl transition-all duration-300 bg-red-500/5 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/40"
+            >
+              <div className="relative min-w-[42px] flex justify-center items-center">
+                <RiLogoutBoxRLine className="relative text-lg text-red-400 group-hover/btn:text-red-500 transition-transform duration-300 group-hover/btn:rotate-12 group-hover/btn:scale-110" />
               </div>
-              <RiLogoutBoxRLine className="relative text-xl text-red-500 transition-transform duration-300 group-hover/btn:rotate-12" />
-            </div>
-            <div className="flex flex-col items-start opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500 leading-none">
-                Terminate
-              </span>
-              <span className="text-[8px] font-medium text-red-400/50 uppercase tracking-tighter mt-1">
-                System Access
-              </span>
-            </div>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover/btn:opacity-100 transition-all">
-                <div className="w-1 h-1 bg-red-500 rounded-full animate-ping" />
-            </div>
-          </button>
-        </div>
+              <div className="flex flex-col items-start md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 ml-2">
+                <span className="text-[9px] font-black uppercase tracking-[0.1em] text-red-400 leading-none group-hover/btn:text-red-500">
+                  Terminate
+                </span>
+              </div>
+            </button>
+          </div>
 
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -11,7 +11,6 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
   const [loading, setLoading] = useState(false);
   const [isFeatured, setIsFeatured] = useState(lesson.isFeatured || false);
 
-
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -27,7 +26,6 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
     }
   };
 
-
   const handleToggleFeatured = async () => {
     try {
       const newStatus = !isFeatured;
@@ -39,7 +37,6 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
     }
   };
 
- 
   const handleResolve = async () => {
     try {
       await resolveReport(lesson._id);
@@ -65,7 +62,6 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         `}
       >
         {/* Title & Featured Badge */}
-
         <td className="px-4 py-4">
           <div className="flex flex-col">
             <span className="font-bold text-white flex items-center gap-2">
@@ -77,7 +73,6 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
 
         {/* Category */}
-
         <td className="px-4 py-4">
           <span className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-widest
             bg-cyan-500/10 text-cyan-400 border border-cyan-400/20">
@@ -86,13 +81,11 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
 
         {/* Creator */}
-
         <td className="px-4 py-4 text-gray-300 text-sm">
           {lesson.creatorName || "Unknown"}
         </td>
 
         {/* Reports Status */}
-
         <td className="px-4 py-4 text-center">
           <div className="flex flex-col items-center gap-1">
             <span
@@ -108,7 +101,6 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
 
         {/* Visibility */}
-
         <td className="px-4 py-4">
            <span className={`text-xs font-bold uppercase ${lesson.accessLevel === 'premium' ? 'text-fuchsia-400' : 'text-emerald-400'}`}>
               {lesson.accessLevel || "Free"}
@@ -116,13 +108,11 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
 
         {/* Date */}
-
         <td className="px-4 py-4 text-gray-400 text-xs font-mono">
           {lesson.createdAt ? format(new Date(lesson.createdAt), "dd MMM yyyy") : "N/A"}
         </td>
 
         {/* Actions */}
-
         <td className="px-4 py-4">
           <div className="flex gap-2 justify-end">
             {!isReportedPage && (
@@ -163,16 +153,18 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
       </tr>
 
-      {/* Modal - Adjusted prop name to match your ManageUsers logic */}
-
-      <ConfirmDeleteModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDelete}
-        loading={loading}
-        title="Confirm Destruction"
-        message={`Are you sure you want to delete "${lesson.title}"? This is a permanent action.`}
-      />
+      {/* Confirm Delete Modal - সব প্রপস অ্যাড করা হয়েছে যাতে এরর না আসে */}
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onCancel={() => setShowDeleteModal(false)} // AdminUserRow এর সাথে মিল রাখার জন্য
+          onConfirm={handleDelete}
+          loading={loading}
+          title="Confirm Destruction"
+          message={`Are you sure you want to delete "${lesson.title}"? This is a permanent action.`}
+        />
+      )}
     </>
   );
 };

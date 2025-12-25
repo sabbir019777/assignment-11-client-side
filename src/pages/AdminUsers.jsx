@@ -1,92 +1,116 @@
 // src/pages/AdminUsers.jsx
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import AdminUserRow from "../components/AdminUserRow";
-import axiosInstance from "../utils/api";
+import { axiosInstance } from "../utils/api";
+import { Search, Trash2, ShieldCheck, User, Mail, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [actionLoading, setActionLoading] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-
-      const res = await axiosInstance.get("/users"); 
-      
-      
-      const fetchedData = res.data?.data || res.data || [];
-      setUsers(Array.isArray(fetchedData) ? fetchedData : []);
-      
+      const res = await axiosInstance.get("/users/all");
+      setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "ইউজার লিস্ট লোড করা সম্ভব হয়নি");
+      toast.error("ইউজার লিস্ট লোড করা সম্ভব হয়নি");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  useEffect(() => { fetchUsers(); }, []);
 
+  const handleRoleUpdate = async (id, currentRole) => {
+    const newRole = currentRole === "admin" ? "user" : "admin";
+    try {
+      setActionLoading(id);
+      
+      // ব্যাকএন্ডে PATCH রিকোয়েস্ট
+      const res = await axiosInstance.patch(`/users/role/${id}`, { role: newRole });
 
-  const handleUserDeleted = (userId) => {
-    setUsers((prev) => prev.filter((u) => u._id !== userId));
+      if (res.status === 200 || res.data.modifiedCount > 0) {
+        setUsers((prev) =>
+          prev.map((u) => (u._id === id ? { ...u, role: newRole } : u))
+        );
+        toast.success(`ইউজার এখন ${newRole.toUpperCase()}`);
+      }
+    } catch (err) {
+      // এই লগটি আপনাকে জানাবে আসল সমস্যা কোথায়
+      console.error("DEBUG_ERROR:", err.response);
+      
+      const status = err.response?.status;
+      if (status === 403) {
+        toast.error("Forbidden: আপনার অ্যাডমিন পাওয়ার নেই!");
+      } else if (status === 404) {
+        toast.error("Error 404: ব্যাকএন্ডে রাস্তা খুঁজে পাওয়া যায়নি");
+      } else {
+        toast.error("রোল আপডেট করা সম্ভব হয়নি");
+      }
+    } finally {
+      setActionLoading(null);
+    }
   };
 
-  const handleRoleUpdated = (userId, newRole) => {
-    setUsers((prev) =>
-      prev.map((u) => (u._id === userId ? { ...u, role: newRole } : u))
-    );
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm("আপনি কি নিশ্চিত?")) return;
+    try {
+      setActionLoading(id);
+      await axiosInstance.delete(`/users/${id}`);
+      setUsers((prev) => prev.filter((u) => u._id !== id));
+      toast.success("Identity Removed");
+    } catch (err) {
+      toast.error("ডিলিট করা যায়নি");
+    } finally {
+      setActionLoading(null);
+    }
   };
+
+  const filteredUsers = users.filter((u) =>
+    u.name?.toLowerCase().includes(search.toLowerCase()) ||
+    u.email?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="p-4 md:p-8 bg-[#01040D] min-h-screen text-white">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black uppercase tracking-tight">
-          User <span className="text-[#40E0D0]">Management</span>
-        </h1>
-        <p className="text-gray-500 text-[10px] font-mono uppercase tracking-widest mt-1">Control access and user roles</p>
+    <div className="p-6 md:p-12 bg-[#01040D] min-h-screen text-white">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        <h1 className="text-4xl font-black uppercase tracking-tight">User <span className="text-[#40E0D0]">Matrix</span></h1>
+        <input
+          placeholder="Search Identity..."
+          className="bg-[#0A0F1F] border border-white/10 py-3 px-4 rounded-xl outline-none focus:border-[#40E0D0]/50"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl border border-white/5 bg-[#0A0F1F] shadow-2xl">
-        <table className="min-w-full table-auto border-collapse">
-          <thead>
-            <tr className="bg-white/5 text-left text-[10px] uppercase tracking-widest text-gray-400">
-              <th className="px-6 py-4 font-black">User Info</th>
-              <th className="px-6 py-4 font-black text-center">Current Role</th>
-              <th className="px-6 py-4 font-black text-center">Subscription</th>
-              <th className="px-6 py-4 font-black text-center">Lessons</th>
-              <th className="px-6 py-4 font-black text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="text-center py-20">
-                  <div className="inline-block w-8 h-8 border-4 border-[#40E0D0] border-t-transparent rounded-full animate-spin"></div>
-                  <p className="text-xs mt-2 text-gray-500 animate-pulse uppercase tracking-widest">Loading Records...</p>
-                </td>
-              </tr>
-            ) : users.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-20 text-gray-500 text-sm italic">
-                  No users found in database.
-                </td>
-              </tr>
-            ) : (
-              users.map((user) => (
-                <AdminUserRow
-                  key={user._id}
-                  userData={user}
-                  onDeleted={handleUserDeleted}
-                  onRoleUpdated={handleRoleUpdated}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <AnimatePresence>
+          {filteredUsers.map((user) => (
+            <motion.div key={user._id} className="bg-[#0A0F1F] border border-white/5 p-6 rounded-[2.5rem] relative">
+              <div className="flex items-center gap-5 mb-6">
+                <img src={user.photoURL || "https://i.ibb.co/7zvZfJp/user.png"} className="w-16 h-16 rounded-2xl object-cover" alt="profile" />
+                <div className="text-left">
+                  <h2 className="font-bold text-lg truncate">{user.name || "Anonymous"}</h2>
+                  <p className="text-gray-500 text-xs truncate">{user.email}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleRoleUpdate(user._id, user.role)}
+                  disabled={actionLoading === user._id}
+                  className="flex-1 bg-white/5 hover:bg-white/10 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest"
+                >
+                  {actionLoading === user._id ? "..." : (user.role === 'admin' ? 'Demote' : 'Make Admin')}
+                </button>
+                <button onClick={() => handleDeleteUser(user._id)} className="px-5 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

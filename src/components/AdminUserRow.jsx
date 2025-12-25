@@ -72,21 +72,22 @@ const AdminUserRow = ({ userData, onDeleted, onRoleUpdated }) => {
               disabled={loading}
               className="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-black uppercase px-4 py-2 rounded-xl transition-all disabled:opacity-50"
             >
-              Deleted
+              Delete
             </button>
           </div>
         </td>
       </tr>
 
-      {/* Confirm Delete Modal */}
-
+      {/* Confirm Delete Modal - logic exactly as before with improved reliability */}
       {showDeleteModal && (
         <ConfirmDeleteModal
-          title="Security Authorization"
-          message={`Terminate access for "${userData.name}"? All associated data will be purged.`}
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={handleDelete}
           loading={loading}
+          title="Security Authorization"
+          message={`Terminate access for "${userData.name}"? All associated data will be purged.`}
         />
       )}
     </>

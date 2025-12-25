@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Trash2, Loader2, ShieldCheck, User, Zap } from "lucide-react";
+import { Search, Trash2, Loader2, ShieldCheck, User, Mail, ShieldAlert } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getAllUsers, deleteUser, updateUserRole } from "../utils/api"; 
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
@@ -10,31 +10,46 @@ const ManageUsers = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [actionLoading, setActionLoading] = useState(null);
-  
   const [modalOpen, setModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
+  // ১. ইউজার ডাটা ফেচিং
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await getAllUsers();
-      setUsers(Array.isArray(data) ? data : []);
+      const data = await getAllUsers(); //
+      // আপনার ব্যাকএন্ড সরাসরি অ্যারে পাঠাচ্ছে কি না তা চেক করুন
+      setUsers(Array.isArray(data) ? data : data?.data || []);
     } catch (err) {
-      toast.error("Failed to fetch users");
+      toast.error("ইউজার ডাটা লোড করা যায়নি!");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // ২. ডিলিট বাটন ক্লিক করলে মোডাল ওপেন হবে এবং সঠিক আইডি ধরবে
+  const handleDeleteClick = (id, name) => {
+    setUserToDelete({ id, name }); // এখানে id আসলে MongoDB-র _id
+    setModalOpen(true);
+  };
+
+  // ৩. মোডাল থেকে কনফার্ম করলে অরিজিনাল ডিলিট ফাংশন কল হবে
   const confirmDelete = async () => {
     if (!userToDelete) return;
     try {
       setActionLoading(userToDelete.id);
-      await deleteUser(userToDelete.id);
+      await deleteUser(userToDelete.id); // API কল: axiosInstance.delete(`/users/${id}`)
+      
+      // স্টেট থেকে ডিলিট করা ইউজারকে সরিয়ে ফেলা
       setUsers((prev) => prev.filter((u) => u._id !== userToDelete.id));
-      toast.success("User removed from matrix");
+      toast.success("Identity Terminated Successfully");
     } catch (err) {
-      toast.error("Operation failed");
+      console.error("Delete Error:", err);
+      toast.error("Security Override: ডিলিট করা সম্ভব হয়নি");
     } finally {
       setActionLoading(null);
       setModalOpen(false);
@@ -42,6 +57,7 @@ const ManageUsers = () => {
     }
   };
 
+  // ৪. রোল আপডেট (Make Admin/User)
   const handleRoleUpdate = async (id, currentRole) => {
     const newRole = currentRole === "admin" ? "user" : "admin";
     try {
@@ -50,17 +66,13 @@ const ManageUsers = () => {
       setUsers((prev) =>
         prev.map((u) => (u._id === id ? { ...u, role: newRole } : u))
       );
-      toast.success(`Access level changed to ${newRole.toUpperCase()}`);
+      toast.success(`Access Level: ${newRole.toUpperCase()}`);
     } catch (err) {
-      toast.error("Role update failed");
+      toast.error("রোল আপডেট করা যায়নি");
     } finally {
       setActionLoading(null);
     }
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const filteredUsers = users.filter((u) =>
     u.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -68,138 +80,68 @@ const ManageUsers = () => {
   );
 
   return (
-    <div className="p-8 max-w-[1600px] mx-auto min-h-screen bg-blue-900 text-white selection:bg-cyan-500/30">
+    <div className="p-6 md:p-10 max-w-[1400px] mx-auto min-h-screen bg-[#01040D] text-white">
       
-      {/* ১. হেডার সেকশন */}
-      <div className="flex flex-col items-center mb-16 relative">
-        <div className="absolute top-0 w-72 h-72 bg-cyan-500/10 blur-[120px] -z-10" />
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="flex items-center gap-3 mb-4 px-4 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-md"
-        >
-          <Zap className="w-4 h-4 text-cyan-400 fill-cyan-400" />
-          <span className="text-[10px] font-black tracking-[0.3em] uppercase text-cyan-400">System Directory</span>
-        </motion.div>
-        
-        <motion.h1 
-          className="text-5xl md:text-6xl font-black mb-6 text-center tracking-tighter"
-          style={{ textShadow: "0 0 30px rgba(255,255,255,0.1)" }}
-        >
-          NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">DATABASE</span>
-        </motion.h1>
+      {/* হেডার */}
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl font-black uppercase tracking-widest text-white mb-2">
+          USER <span className="text-[#40E0D0]">MATRIX</span>
+        </h1>
+        <div className="h-1 w-20 bg-[#40E0D0] mx-auto rounded-full"></div>
+      </div>
 
-        {/* সার্চ বার */}
-        <div className="relative w-full max-w-2xl group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-fuchsia-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-          <div className="relative flex items-center bg-[#0a0f18] border border-white/10 rounded-2xl overflow-hidden">
-            <Search className="ml-6 w-5 h-5 text-gray-500 group-hover:text-cyan-400 transition-colors" />
-            <input
-              placeholder="Query Identity or Credentials..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-4 py-5 bg-transparent outline-none text-lg font-medium placeholder:text-gray-600"
-            />
-          </div>
-        </div>
+      {/* সার্চ */}
+      <div className="relative max-w-xl mx-auto mb-16">
+        <input
+          placeholder="Query Identity..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full bg-[#0A0F1F] border border-white/10 py-4 pl-14 pr-6 rounded-2xl outline-none focus:border-[#40E0D0] transition-all"
+        />
+        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center h-64 gap-6">
-          <div className="relative">
-             <Loader2 className="w-16 h-16 text-cyan-500 animate-spin" />
-             <div className="absolute inset-0 blur-xl bg-cyan-500/20 animate-pulse" />
-          </div>
-          <p className="text-cyan-500 font-mono text-[10px] tracking-[0.5em] animate-pulse">SYNCHRONIZING_MATRIX...</p>
-        </div>
+        <div className="flex justify-center items-center h-64"><Loader2 className="w-10 h-10 text-[#40E0D0] animate-spin" /></div>
       ) : (
-        /* ২. কার্ড গ্রিড (সাইজ বড় করা হয়েছে) */
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence>
             {filteredUsers.map((user) => (
-              <motion.div 
-                key={user._id} 
+              <motion.div
+                key={user._id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                whileHover={{ y: -10 }}
-                className="relative group"
+                className="bg-[#0A0F1F] border border-white/5 rounded-[2.5rem] p-8 group relative overflow-hidden"
               >
-                {/* কার্ড ব্যাকগ্রাউন্ড গ্লো */}
-                <div className={`absolute -inset-0.5 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition duration-500 blur-sm ${user.role === 'admin' ? 'bg-fuchsia-500/30' : 'bg-cyan-500/30'}`} />
-                
-                <div className="relative bg-[#0a0f18]/80 backdrop-blur-2xl border border-white/10 p-8 rounded-[2.5rem] overflow-hidden">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative mb-4">
+                    <img
+                      src={user.photoURL || user.image || `https://ui-avatars.com/api/?name=${user.name}`}
+                      className="w-24 h-24 rounded-3xl object-cover border-2 border-white/10 group-hover:border-[#40E0D0] transition-all"
+                      alt="avatar"
+                    />
+                    <div className={`absolute -bottom-2 -right-2 p-2 rounded-xl ${user.role === 'admin' ? 'bg-fuchsia-600' : 'bg-[#40E0D0]'}`}>
+                      {user.role === 'admin' ? <ShieldAlert className="w-4 h-4 text-white" /> : <User className="w-4 h-4 text-white" />}
+                    </div>
+                  </div>
+                  <h2 className="text-xl font-black text-white truncate w-full text-center">{user.name || "Unknown"}</h2>
+                  <p className="text-gray-500 text-xs font-mono mt-1"><Mail className="inline w-3 h-3 mr-1" />{user.email}</p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleRoleUpdate(user._id, user.role)}
+                    disabled={actionLoading === user._id}
+                    className="flex-1 bg-white/5 hover:bg-white/10 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                  >
+                    {actionLoading === user._id ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : (user.role === 'admin' ? 'Demote' : 'Make Admin')}
+                  </button>
                   
-                  {/* ইউজার প্রোফাইল সেকশন */}
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="flex items-center gap-5">
-                      <div className="relative">
-                        <img
-                          src={user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`}
-                          className="w-20 h-20 rounded-3xl object-cover border-2 border-white/10 group-hover:border-cyan-400 transition-colors duration-500 shadow-2xl"
-                          alt="avatar"
-                        />
-                        <div className={`absolute -bottom-1 -right-1 p-1.5 rounded-lg border border-white/10 ${user.role === 'admin' ? 'bg-fuchsia-500' : 'bg-cyan-500'}`}>
-                          {user.role === 'admin' ? <ShieldCheck className="w-3 h-3 text-white" /> : <User className="w-3 h-3 text-white" />}
-                        </div>
-                      </div>
-                      <div className="max-w-[180px]">
-                        <h2 className="font-black text-xl tracking-tight text-white group-hover:text-cyan-400 transition-colors truncate">
-                          {user.name || "Unknown Entity"}
-                        </h2>
-                        <p className="text-xs font-mono text-gray-500 truncate mt-1">{user.email}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ডিটেইলস প্যানেল */}
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center bg-white/5 px-5 py-4 rounded-2xl border border-white/5 group-hover:border-white/10 transition-all">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Auth Priority</span>
-                      <span className={`text-[10px] font-black px-3 py-1 rounded-full ${user.role === 'admin' ? 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20 shadow-[0_0_15px_rgba(217,70,239,0.1)]' : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]'}`}>
-                        {user.role?.toUpperCase()}
-                      </span>
-                    </div>
-
-                    {/* অ্যাকশন বাটন */}
-                    <div className="flex gap-3 pt-2">
-                      <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => {
-                          setUserToDelete({ id: user._id, name: user.name });
-                          setModalOpen(true);
-                        }}
-                        className="p-4 bg-red-500/5 hover:bg-red-500/20 text-red-500 rounded-2xl border border-red-500/20 transition-all flex items-center justify-center group/del"
-                      >
-                        <Trash2 className="w-5 h-5 group-hover/del:animate-bounce" />
-                      </motion.button>
-
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleRoleUpdate(user._id, user.role)}
-                        disabled={actionLoading === user._id}
-                        className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] transition-all border ${
-                          user.role === 'admin' 
-                          ? 'bg-white/5 border-white/10 text-white hover:bg-white/10' 
-                          : 'bg-cyan-500 border-cyan-400 text-[#020617] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)]'
-                        }`}
-                      >
-                        {actionLoading === user._id ? (
-                          <Loader2 className="animate-spin w-5 h-5" />
-                        ) : (
-                          <>
-                            {user.role === 'admin' ? 'Revoke Protocol' : 'Upgrade Access'}
-                          </>
-                        )}
-                      </motion.button>
-                    </div>
-                  </div>
-
-                  {/* ডেকোরেটিভ ব্যাকগ্রাউন্ড এলিমেন্ট */}
-                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                    <ShieldCheck className="w-32 h-32 -mr-10 -mt-10" />
-                  </div>
+                  <button
+                    onClick={() => handleDeleteClick(user._id, user.name)}
+                    className="px-5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -207,13 +149,14 @@ const ManageUsers = () => {
         </div>
       )}
 
+      {/* কনফার্মেশন মোডাল */}
       <ConfirmDeleteModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={confirmDelete}
-        loading={actionLoading === userToDelete?.id}
-        title="CRITICAL_ACTION_REQUIRED"
-        message={`Are you prepared to permanently terminate the entity "${userToDelete?.name}" from the central neural network?`}
+        loading={actionLoading !== null}
+        title="CRITICAL_TERMINATION"
+        message={`Are you prepared to remove entity "${userToDelete?.name}"?`}
       />
     </div>
   );
