@@ -13,12 +13,11 @@ const ManageUsers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
-  // ১. ইউজার ডাটা ফেচিং
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const data = await getAllUsers(); //
-      // আপনার ব্যাকএন্ড সরাসরি অ্যারে পাঠাচ্ছে কি না তা চেক করুন
+    
       setUsers(Array.isArray(data) ? data : data?.data || []);
     } catch (err) {
       toast.error("ইউজার ডাটা লোড করা যায়নি!");
@@ -31,20 +30,20 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
-  // ২. ডিলিট বাটন ক্লিক করলে মোডাল ওপেন হবে এবং সঠিক আইডি ধরবে
+
   const handleDeleteClick = (id, name) => {
-    setUserToDelete({ id, name }); // এখানে id আসলে MongoDB-র _id
+    setUserToDelete({ id, name }); 
     setModalOpen(true);
   };
 
-  // ৩. মোডাল থেকে কনফার্ম করলে অরিজিনাল ডিলিট ফাংশন কল হবে
+
   const confirmDelete = async () => {
     if (!userToDelete) return;
     try {
       setActionLoading(userToDelete.id);
-      await deleteUser(userToDelete.id); // API কল: axiosInstance.delete(`/users/${id}`)
+      await deleteUser(userToDelete.id); 
       
-      // স্টেট থেকে ডিলিট করা ইউজারকে সরিয়ে ফেলা
+   
       setUsers((prev) => prev.filter((u) => u._id !== userToDelete.id));
       toast.success("Identity Terminated Successfully");
     } catch (err) {
@@ -57,7 +56,7 @@ const ManageUsers = () => {
     }
   };
 
-  // ৪. রোল আপডেট (Make Admin/User)
+
   const handleRoleUpdate = async (id, currentRole) => {
     const newRole = currentRole === "admin" ? "user" : "admin";
     try {
@@ -82,7 +81,7 @@ const ManageUsers = () => {
   return (
     <div className="p-6 md:p-10 max-w-[1400px] mx-auto min-h-screen bg-[#01040D] text-white">
       
-      {/* হেডার */}
+
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-black uppercase tracking-widest text-white mb-2">
           USER <span className="text-[#40E0D0]">MATRIX</span>
@@ -90,7 +89,7 @@ const ManageUsers = () => {
         <div className="h-1 w-20 bg-[#40E0D0] mx-auto rounded-full"></div>
       </div>
 
-      {/* সার্চ */}
+
       <div className="relative max-w-xl mx-auto mb-16">
         <input
           placeholder="Query Identity..."
@@ -149,7 +148,6 @@ const ManageUsers = () => {
         </div>
       )}
 
-      {/* কনফার্মেশন মোডাল */}
       <ConfirmDeleteModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

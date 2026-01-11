@@ -30,7 +30,7 @@ const AdminUsers = () => {
     try {
       setActionLoading(id);
       
-      // ব্যাকএন্ডে PATCH রিকোয়েস্ট
+
       const res = await axiosInstance.patch(`/users/role/${id}`, { role: newRole });
 
       if (res.status === 200 || res.data.modifiedCount > 0) {
@@ -40,7 +40,7 @@ const AdminUsers = () => {
         toast.success(`ইউজার এখন ${newRole.toUpperCase()}`);
       }
     } catch (err) {
-      // এই লগটি আপনাকে জানাবে আসল সমস্যা কোথায়
+     
       console.error("DEBUG_ERROR:", err.response);
       
       const status = err.response?.status;

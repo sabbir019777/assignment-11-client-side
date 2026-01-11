@@ -1,4 +1,4 @@
-// src/components/AdminLessonRow.jsx
+
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { adminDeleteLesson, toggleFeatured, resolveReport } from "../utils/api"; 
@@ -153,12 +153,12 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
       </tr>
 
-      {/* Confirm Delete Modal - সব প্রপস অ্যাড করা হয়েছে যাতে এরর না আসে */}
+ 
       {showDeleteModal && (
         <ConfirmDeleteModal
           isOpen={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
-          onCancel={() => setShowDeleteModal(false)} // AdminUserRow এর সাথে মিল রাখার জন্য
+          onCancel={() => setShowDeleteModal(false)} 
           onConfirm={handleDelete}
           loading={loading}
           title="Confirm Destruction"

@@ -3,13 +3,14 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-/* Components */
+/* Components & Pages */
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
-import AdminSidebar from "./components/AdminSidebar"; // ১. সাইডবার ইমপোর্ট নিশ্চিত করুন
+import AdminSidebar from "./components/AdminSidebar";
 
-/* Pages */
+import ManagerSidebar from "./components/ManagerSidebar"; 
+import UserLayout from "./layouts/layouts"; 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -25,55 +26,74 @@ import LoadingPage from "./pages/LoadingPage";
 import DashboardHome from "./pages/DashboardHome";
 import UpdateProfile from "./components/UpdateProfile";
 import FavoriteLessonRow from "./components/FavoriteLessonRow";
-
-/* Admin Pages & Layouts */
+import About from "./pages/About";
+import Contact from "./pages/Contact"; 
+import Blog from "./pages/Blog";
+import Support from "./pages/Support";
 import AdminLayout from "./components/AdminLayout"; 
 import AdminHouse from "./Dashboard/AdminHouse"; 
 import AdminUsers from "./pages/AdminUsers"; 
 import AdminProfile from "./pages/AdminProfile";
 import ReportedLessonsPage from "./pages/ReportedLessonsPage";
 import ManageLessons from "./pages/ManageLessons"; 
+import ManagerHome from "./pages/ManagerHome";
+
+// --- NEW IMPORTS for Manager Pages ---
+import TeamManagement from "./pages/TeamManagement";
+import ManagerReports from "./pages/ManagerReports";
 
 function AppRoutes() {
   const { user, loading, logout } = useAuth();
 
   if (loading) return <LoadingPage message="Authenticating user..." />;
 
-  // অ্যাডমিন চেক লজিক
   const masterAdminEmail = "admins@gmail.com";
+
   const isAdmin = user && (user.role === "admin" || user.email === masterAdminEmail);
 
   return (
     <HashRouter>
       <Toaster position="top-right" reverseOrder={false} />
-      
-      {/* ২. Navbar যেমন ছিল তেমনই থাকবে */}
       <Navbar user={user} logout={logout} />
 
-      {/* ৩. ম্যাজিক এখানে: অ্যাডমিন লগইন থাকলে সাইডবার পারমানেন্টলি দেখা যাবে */}
+   
       {isAdmin && <AdminSidebar />}
 
-      {/* ৪. কন্টেন্ট এরিয়া: অ্যাডমিন হলে মেইন বডি একটু সরে যাবে যাতে সাইডবারের নিচে না পড়ে */}
+     
       <div className={isAdmin ? "md:ml-16 transition-all duration-300" : ""}>
         <Routes>
-          {/* --- Public Routes --- */}
+          {/* Public Routes */}
           <Route path="/" element={<Home user={user} />} />
-          <Route path="/public-lessons" element={<PublicLessons user={user} />} />
-          <Route path="/lessons/:id" element={<LessonDetails user={user} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/public-lessons" element={<PublicLessons user={user} />} />
+          <Route path="/lessons/:id" element={<LessonDetails user={user} />} />
+          <Route path="/about" element={<About />} /> 
+          <Route path="/contact" element={<Contact />} /> 
+          <Route path="/blog" element={<Blog />} /> 
+          <Route path="/support" element={<Support />} /> 
 
-          {/* --- Private User Routes --- */}
-          <Route path="/dashboard/dashboardhome" element={<PrivateRoute user={user}><DashboardHome /></PrivateRoute>} />
-          <Route path="/dashboard/add-lesson" element={<PrivateRoute user={user}><AddLesson /></PrivateRoute>} />
-          <Route path="/dashboard/my-lessons" element={<PrivateRoute user={user}><MyLessons user={user} /></PrivateRoute>} />
-          <Route path="/dashboard/favourites" element={<PrivateRoute user={user}><div className="min-h-screen bg-[#02040A]"><FavoriteLessonRow user={user} /></div></PrivateRoute>} />
-          <Route path="/dashboard/update-lesson/:id" element={<PrivateRoute user={user}><UpdateLesson /></PrivateRoute>} />
-          <Route path="/dashboard/profile" element={<PrivateRoute user={user}><Profile user={user} /></PrivateRoute>} />
-          <Route path="/dashboard/update-profile" element={<PrivateRoute user={user}><UpdateProfile /></PrivateRoute>} />
+
+          <Route path="/dashboard" element={<PrivateRoute user={user}><UserLayout /></PrivateRoute>}>
+            <Route index element={<DashboardHome />} /> 
+            <Route path="dashboardhome" element={<DashboardHome />} />
+            
+
+            <Route path="manager" element={<ManagerHome />} />
+            <Route path="manager/team" element={<TeamManagement />} />     
+            <Route path="manager/reports" element={<ManagerReports />} /> 
+            
+            <Route path="add-lesson" element={<AddLesson />} />
+            <Route path="my-lessons" element={<MyLessons user={user} />} />
+            <Route path="profile" element={<Profile user={user} />} />
+            <Route path="update-profile" element={<UpdateProfile />} />
+            <Route path="favourites" element={<div className="min-h-screen bg-[#02040A]"><FavoriteLessonRow user={user} /></div>} />
+            <Route path="update-lesson/:id" element={<UpdateLesson />} />
+          </Route>
+
           <Route path="/pricing" element={<PrivateRoute user={user}><Pricing /></PrivateRoute>} />
 
-          {/* --- Admin Routes --- */}
+          {/* Admin Routes [cite: 2025-12-24] */}
           <Route path="/dashboard/admin" element={<AdminLayout />}>
               <Route index element={<AdminHouse />} /> 
               <Route path="users" element={<AdminUsers />} /> 
@@ -82,12 +102,9 @@ function AppRoutes() {
               <Route path="profile" element={<AdminProfile />} /> 
           </Route>
 
-          <Route path="/loading" element={<LoadingPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-
-      {/* ৫. Footer যেমন ছিল তেমনই থাকবে */}
       <Footer />
     </HashRouter>
   );

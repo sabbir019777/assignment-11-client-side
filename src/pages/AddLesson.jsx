@@ -12,9 +12,9 @@ import successAnimationData from "../assets/lottie/payment-success.json";
 const LottieComponent =
   typeof Lottie === "object" && Lottie.default ? Lottie.default : Lottie;
 
-// --------------------------------------------------------
+
 // Success Modal Component
-// --------------------------------------------------------
+
 const SuccessModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
@@ -64,7 +64,7 @@ const AddLesson = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setInitialLoading(false);
-    }, 3000);
+    }, 700);
     return () => clearTimeout(timer);
   }, []);
 

@@ -24,7 +24,7 @@ const MyLessons = () => {
         const res = await axiosInstance.get(`/lessons/my-lessons/${user.uid}`);
         
         
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 700));
 
         const lessonsData = Array.isArray(res.data)
           ? res.data
@@ -148,7 +148,7 @@ const MyLessons = () => {
 
   return (
     <div className="p-6">
-      {/* --- টাইটেল এবং কার্ড সেকশন আপনার অরিজিনাল কোড অনুযায়ী --- */}
+  
       <div className="relative mb-16 mt-4 text-center">
         <div className="absolute inset-0 -top-4 flex justify-center opacity-10 pointer-events-none">
           <span className="text-7xl md:text-9xl font-black text-cyan-500 tracking-tighter">ARCHIVE</span>

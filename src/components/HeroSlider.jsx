@@ -1,9 +1,9 @@
 import React from "react";
 import SlickSlider from "react-slick";
-import { FaChevronLeft, FaChevronRight, FaRocket, FaShieldAlt } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRocket, FaShieldAlt, FaChevronDown } from "react-icons/fa"; // Added FaChevronDown
 import { Link } from "react-router-dom";
 
-// Slick carousel CSS
+
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -16,7 +16,7 @@ const CustomArrow = ({ direction, onClick }) => (
     className={`absolute ${direction === "next" ? "right-6" : "left-6"} top-1/2 -translate-y-1/2 z-30 group transition-all duration-500`}
   >
     <div className="relative p-4 rounded-lg bg-black/40 border border-[#40E0D0]/20 backdrop-blur-xl group-hover:border-[#40E0D0] group-hover:shadow-[0_0_20px_#40E0D0] group-active:scale-90 transition-all">
-      {/* Scanner light effect on arrow */}
+
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#40E0D0]/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
       {direction === "next" ? (
         <FaChevronRight className="text-[#40E0D0] text-2xl" />
@@ -47,21 +47,22 @@ const HeroSlider = ({ slides = [] }) => {
 
   return (
     <div className="relative w-full group overflow-hidden rounded-[2rem] border-4 border-[#0A102D] shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-      {/* Background Animated Grid Overlay */}
+
       <div className="absolute inset-0 z-10 pointer-events-none opacity-20 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
 
       <Slider {...settings}>
         {slides.map((slide, index) => (
           <div key={index} className="relative outline-none">
-            {/* Image Section with Ken Burns Effect */}
-            <div className="relative h-[550px] md:h-[700px] overflow-hidden">
+            
+            {/*  Rule 1: Height limited to 60–70% of the screen (vh unit used) */}
+            <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden">
               <img
                 src={slide.image}
                 alt={slide.title}
                 className="w-full h-full object-cover animate-[kenburns_20s_ease_infinite]"
               />
               {/* Dark Cyber Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#0A102D] via-transparent to-[#0A102D]/80"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0A102D] via-transparent to-[#0A102D]/90"></div>
             </div>
 
             {/* Content UI */}
@@ -92,7 +93,7 @@ const HeroSlider = ({ slides = [] }) => {
                 </p>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button (CTA) */}
               <Link
                 to={slide.link}
                 className="group relative px-12 py-5 bg-transparent border-2 border-[#40E0D0] text-[#40E0D0] font-bold text-lg uppercase tracking-widest rounded-none overflow-hidden hover:text-black transition-colors duration-300"
@@ -112,11 +113,16 @@ const HeroSlider = ({ slides = [] }) => {
         ))}
       </Slider>
 
-      {/* Futuristic Keyframe Animations */}
-     <style dangerouslySetInnerHTML={{ __html: `
-  .swiper-pagination-bullet { background: #40E0D0 !important; }
-  .swiper-pagination-bullet-active { box-shadow: 0 0 10px #40E0D0; }
-` }} />
+      {/*  Rule 3: Clear visual flow to the next section (Animated Scroll Indicator) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-bounce pointer-events-none opacity-80">
+         <span className="text-[#40E0D0] text-[10px] tracking-[0.3em] uppercase mb-2">Scroll Down</span>
+         <FaChevronDown className="text-[#FF00FF] text-xl drop-shadow-[0_0_8px_#FF00FF]" />
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .swiper-pagination-bullet { background: #40E0D0 !important; }
+        .swiper-pagination-bullet-active { box-shadow: 0 0 10px #40E0D0; }
+      ` }} />
     </div>
   );
 };

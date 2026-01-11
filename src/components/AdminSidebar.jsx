@@ -41,7 +41,7 @@ const AdminSidebar = () => {
 
   if (loading) return null;
 
-  // অ্যাডমিন চেক এবং লগআউট করলে যেন অদৃশ্য হয়ে যায় সেই লজিক
+ 
   const masterAdminEmail = "admins@gmail.com";
   const isAdmin = user && (user.role === "admin" || user.email === masterAdminEmail);
 
@@ -49,7 +49,7 @@ const AdminSidebar = () => {
 
   return (
     <>
-      {/* মোবাইল টগল বাটন - Hamburger/Cross কালার সায়ান করা হয়েছে */}
+
       <button 
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         className="fixed top-4 left-4 z-[60] md:hidden p-2.5 bg-white/10 border border-white/20 rounded-xl text-[#40E0D0] active:scale-95 transition-all shadow-lg"
@@ -61,7 +61,6 @@ const AdminSidebar = () => {
         )}
       </button>
 
-      {/* মোবাইল ওভারলে */}
       {isMobileOpen && (
         <div 
           onClick={() => setIsMobileOpen(false)}
@@ -69,17 +68,17 @@ const AdminSidebar = () => {
         />
       )}
 
-      {/* মেইন সাইডবার কন্টেইনার */}
+
       <div className={`
         fixed z-50 flex group h-[calc(100vh-32px)]
         top-4 bottom-4 
         transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
         
-        /* মোবাইল মোড */
+
         ${isMobileOpen ? 'left-4' : '-left-[120%]'} 
         w-64 
 
-        /* ডেক্সটপ স্লিম মোড */
+
         md:left-4 
         md:w-16 
         md:hover:w-64 
@@ -89,13 +88,13 @@ const AdminSidebar = () => {
           
           <div className="absolute inset-0 bg-gradient-to-b from-[#40E0D0]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          {/* লোগো সেকশন */}
+
           <div className="h-20 flex items-center px-3 shrink-0">
             <div className="relative min-w-[38px] h-[38px] flex justify-center items-center bg-[#40E0D0]/10 rounded-xl border border-white/20 shadow-md">
                 <RiShieldFlashLine className="text-xl text-[#40E0D0] animate-pulse" />
             </div>
             <div className="ml-4 flex flex-col md:opacity-0 md:group-hover:opacity-100 transition-all duration-500">
-              {/* Digital লোগো কালার সায়ান করা হয়েছে */}
+   
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#40E0D0] uppercase">Digital</span>
               <h2 className="text-base font-black tracking-tighter text-white whitespace-nowrap drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
                 Life <span className="text-[#40E0D0]">Lessons</span>
@@ -103,7 +102,6 @@ const AdminSidebar = () => {
             </div>
           </div>
 
-          {/* ন্যাভিগেশন লিংকস */}
           <nav className="flex-1 px-2 space-y-1.5 overflow-y-auto no-scrollbar relative">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -129,7 +127,7 @@ const AdminSidebar = () => {
             })}
           </nav>
 
-          {/* লগআউট সেকশন */}
+ 
           <div className="p-2.5 mt-auto">
             <button
               onClick={(e) => {

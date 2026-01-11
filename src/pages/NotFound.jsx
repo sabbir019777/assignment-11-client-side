@@ -54,11 +54,11 @@ const NotFound = () => {
       <div
         className="relative z-30 p-12 rounded-full flex flex-col items-center justify-center transition-all duration-700 max-w-lg text-center data-beacon"
         style={{
-            // No box shadow, using a glow effect
+
             boxShadow: `0 0 50px ${EMERALD_GREEN}AA, 0 0 100px ${VOID_VIOLET}66`,
             background: `radial-gradient(circle, ${VOID_VIOLET}77 0%, ${RIFT_BLUE}44 70%)`,
             border: `2px solid ${EMERALD_GREEN}66`,
-            minHeight: '400px' // Slightly reduced height/aspect ratio
+            minHeight: '400px' 
         }}
       >
 

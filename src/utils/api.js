@@ -224,7 +224,7 @@ export const addComment = async (lessonId, commentData) => {
 };
 
 // --------------------
-// FAVOURITES API (FIXED: removed /api)
+// FAVOURITES API
 // --------------------
 export const toggleFavorite = async (lessonId, userId) => {
   if (!lessonId) throw new Error("lessonId is required");
@@ -253,9 +253,9 @@ export const getMyFavourites = async (userId) => {
   }
 };
 
-// --------------------
+
 // LIKES API
-// --------------------
+
 export const toggleLike = async (lessonId) => {
   if (!lessonId) throw new Error("toggleLike API error: lessonId is required");
   try {
@@ -267,9 +267,9 @@ export const toggleLike = async (lessonId) => {
   }
 };
 
-// --------------------
+
 // REPORT LESSON
-// --------------------
+
 export const reportLesson = async (lessonId, reportData) => {
   if (!lessonId)
     throw new Error("reportLesson API error: lessonId is required");
@@ -297,24 +297,37 @@ export const deleteComment = async (commentId) => {
   }
 };
 
-// --------------------
-// IMAGE UPLOAD (Slightly improved for reliability)
-// --------------------
-export const uploadImage = async (formData) => {
+
+// IMAGE UPLOAD (FIXED: DIRECT TO IMGBB)
+
+export const uploadImage = async (imageInput) => {
   try {
-    const res = await axiosInstance.post("/upload/image", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return res.data || {};
+    const formData = new FormData();
+ 
+    if (imageInput instanceof FormData) {
+      
+       formData.append("image", imageInput.get("image")); 
+    } else {
+ 
+       formData.append("image", imageInput);
+    }
+
+
+    const res = await axios.post(
+      `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`, 
+      formData
+    );
+
+    return { url: res.data.data.url }; 
   } catch (error) {
     handleError(error, "uploadImage");
     throw error;
   }
 };
 
-// --------------------------------------------------------
-// ADMIN DASHBOARD API (Fixed routes to match your server.js)
-// --------------------------------------------------------
+
+// ADMIN DASHBOARD API
+
 
 export const getAllUsers = async () => {
   try {
@@ -393,9 +406,32 @@ export const getAdminLessons = async () => {
   }
 };
 
-// --------------------------------------------------------
+
+// USER DASHBOARD STATS (NEW - ADDED) 
+
+export const getMyStats = async () => {
+  try {
+    const res = await axiosInstance.get("/api/users/my-stats");
+    return res.data || {};
+  } catch (error) {
+    handleError(error, "getMyStats");
+    throw error;
+  }
+};
+
+export const getActivityGraph = async () => {
+  try {
+    const res = await axiosInstance.get("/api/users/activity-graph");
+    return res.data || { labels: [], data: [] };
+  } catch (error) {
+    handleError(error, "getActivityGraph");
+    throw error;
+  }
+};
+
+
 // ADMIN DASHBOARD STATS
-// --------------------------------------------------------
+
 
 export const getAdminStats = async () => {
   try {

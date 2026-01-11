@@ -1,7 +1,6 @@
 // src/components/Footer.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
 import {
   FaFacebookF,
   FaLinkedinIn,
@@ -9,9 +8,7 @@ import {
   FaEnvelope,
   FaChevronRight,
 } from "react-icons/fa";
-
-import { FaSquareXTwitter } from "react-icons/fa6"; // Twitter/X Icon
-
+import { FaSquareXTwitter } from "react-icons/fa6";
 import { toast } from "react-hot-toast";
 
 const Footer = () => {
@@ -23,14 +20,35 @@ const Footer = () => {
 
   const [subEmail, setSubEmail] = useState("");
 
+  //  Social Links with specific Brand Colors
   const socialLinks = [
-    { icon: <FaSquareXTwitter size={18} />, href: "#" },
-    { icon: <FaFacebookF size={16} />, href: "#" },
-    { icon: <FaLinkedinIn size={16} />, href: "#" },
-    { icon: <FaInstagram size={16} />, href: "#" },
+    { 
+      icon: <FaSquareXTwitter size={18} />, 
+      href: "https://twitter.com",
+
+      colorClass: "hover:bg-black hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.6)]"
+    },
+    { 
+      icon: <FaFacebookF size={16} />, 
+      href: "https://facebook.com",
+
+      colorClass: "hover:bg-[#1877F2] hover:text-white hover:shadow-[0_0_20px_#1877F2]"
+    },
+    { 
+      icon: <FaLinkedinIn size={16} />, 
+      href: "https://linkedin.com",
+
+      colorClass: "hover:bg-[#0077b5] hover:text-white hover:shadow-[0_0_20px_#0077b5]"
+    },
+    { 
+      icon: <FaInstagram size={16} />, 
+      href: "https://instagram.com",
+     
+      colorClass: "hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:shadow-[0_0_20px_#dc2743]"
+    },
   ];
 
-  // Logic remains exactly the same
+
   const handleSubscribe = (e) => {
     e.preventDefault();
 
@@ -104,21 +122,22 @@ const Footer = () => {
             and grow with the power of shared experiences.
           </p>
 
-          {/* Social Icons - Unique Hover Effect */}
+          {/* Social Icons - Updated with Brand Colors */}
           <div className="flex gap-4 pt-4">
             {socialLinks.map((s, i) => (
               <a
                 key={i}
                 href={s.href}
-                className="
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`
                   p-3 rounded-xl bg-[#0B1220] 
                   text-cyan-300
                   transition-all duration-300
                   shadow-[0_0_15px_#00F6FF33]
-                  hover:bg-fuchsia-500 hover:text-white
-                  hover:shadow-[0_0_25px_#8A4DFFFF]
                   transform hover:-translate-y-1
-                "
+                  ${s.colorClass}
+                `}
               >
                 {s.icon}
               </a>
@@ -134,9 +153,8 @@ const Footer = () => {
           <ul className="space-y-3">
             <FooterLink to="/">Home</FooterLink>
             <FooterLink to="/public-lessons">Public Lessons</FooterLink>
-            <FooterLink to="/dashboard/add-lesson">Add Lesson</FooterLink>
-            <FooterLink to="/dashboard/my-lessons">My Dashboard</FooterLink>
-            <FooterLink to="/pricing">Upgrade-Premium</FooterLink>
+            <FooterLink to="/support">Support</FooterLink>
+         
           </ul>
         </div>
 
@@ -146,13 +164,10 @@ const Footer = () => {
             Resources
           </h4>
           <ul className="space-y-3">
-            <FooterLink to="/dashboard/profile">
-              Profile
-            </FooterLink>
-            <FooterLink to="/dashboard/update-profile">Update-Profile</FooterLink>
-            <FooterLink to="/dashboard/favourites">Favourites</FooterLink>
-            <FooterLink to="/public-lessons">Privacy Policy</FooterLink>
-            <FooterLink to="/dashboard/my-lessons">Help Center</FooterLink>
+            <FooterLink to="/contact">Contact</FooterLink>
+            <FooterLink to="/about">About</FooterLink>
+            <FooterLink to="/blog">Blog</FooterLink>
+            
           </ul>
         </div>
 
@@ -181,7 +196,7 @@ const Footer = () => {
                 href={`mailto:${contactEmail}`}
                 className="block text-cyan-400 text-lg font-medium hover:text-cyan-600 transition"
               >
-               Share Your Email
+                Share Your Email
               </a>
             </div>
           </div>
@@ -227,7 +242,7 @@ const Footer = () => {
                 uppercase tracking-widest
               "
             >
-               Subscription
+                Subscription
             </button>
           </form>
         </div>
@@ -241,13 +256,13 @@ const Footer = () => {
           </div>
 
           <div className="flex gap-8 font-light">
-            <Link className="hover:text-fuchsia-400 transition" to="/about">
+            <Link className="hover:text-fuchsia-400 transition" to="/">
               About
             </Link>
-            <Link className="hover:text-fuchsia-400 transition" to="/contact">
+            <Link className="hover:text-fuchsia-400 transition" to="/">
               Contacts
             </Link>
-            <Link className="hover:text-fuchsia-400 transition" to="/sitemap">
+            <Link className="hover:text-fuchsia-400 transition" to="/">
               Sitemap
             </Link>
           </div>

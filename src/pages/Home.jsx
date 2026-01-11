@@ -17,14 +17,51 @@ import {
 
 import { useAuth } from "../contexts/AuthContext";
 
+/* --- Existing Components --- */
 import HeroSlider from "../components/HeroSlider";
 import FeaturedLessonCard from "../components/FeaturedLessonCard";
 import TopContributorCard from "../components/TopContributorCard";
 import BenefitCard from "../components/BenefitCard";
 import MostSavedLessonCard from "../components/MostSavedLessonCard";
-import LoadingSpinner from "../components/LoadingSpinner";
+import Stats from "../components/Stats";
+import LessonCategories from "../components/LessonCategories";
+import UserTestimonials from "../components/UserTestimonials";
+import FaqSection from "../components/FaqSection";
+import Newsletter from "../components/Newsletter";
+import FinalCTA from "../components/FinalCTA";
 
-// Static Data: Back-up contributors
+// --- FORCED DUMMY DATA ---
+const FALLBACK_LESSONS = [
+  {
+    _id: "69615be9aa79e564e2311456",
+    title: "The Silent Growth",
+    description: "Real growth happens in silence. Learn how to cultivate patience and resilience.",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600",
+    category: "Mindset",
+    rating: "5.0",
+    price: 0,
+    location: "Global",
+    accessLevel: "Free",
+    createdAt: new Date().toISOString(),
+    creatorName: "System AI",
+    isDummy: true 
+  },
+  {
+    _id: "69615be9aa79e564e2311450",
+    title: "Digital Legacy",
+    description: "How to leave a digital footprint that inspires future generations.",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600",
+    category: "Tech",
+    rating: "4.9",
+    price: 0,
+    location: "Vault",
+    accessLevel: "Free",
+    createdAt: new Date().toISOString(),
+    creatorName: "System AI",
+    isDummy: true
+  }
+];
+
 const STATIC_CONTRIBUTORS = [
   { uid: "st-1", name: "Sabbir Ahmed", weeklyLessons: 1, photoURL: "https://i.pravatar.cc/150?u=sajib" },
   { uid: "st-2", name: "Tamim Iqbal", weeklyLessons: 1, photoURL: "https://i.pravatar.cc/150?u=tahmid" },
@@ -92,38 +129,37 @@ const Home = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        setLoading(true);
         const [featuredRes, contributorsRes, mostSavedRes] = await Promise.all([
           getFeaturedLessons().catch(() => []),
           getTopContributors().catch(() => []),
           getMostSavedLessons().catch(() => []),
         ]);
 
-        setFeaturedLessons(featuredRes || []);
+        let finalFeatured = featuredRes || [];
+        if (finalFeatured.length > 0 && finalFeatured.length < 8) {
+           const needed = 8 - finalFeatured.length;
+           for(let i=0; i < needed; i++) {
+             finalFeatured.push(FALLBACK_LESSONS[i % FALLBACK_LESSONS.length]);
+           }
+        }
+
+        setFeaturedLessons(finalFeatured);
         setMostSavedLessons(mostSavedRes || []);
         setTopContributors(contributorsRes || []);
         
       } catch (error) {
         console.error("Home fetch error:", error);
       } finally {
-        // লোডিং টাইম ১ সেকেন্ড (১০০০ মিলি-সেকেন্ড) বাড়ানো হয়েছে
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        setLoading(false);
       }
     };
     fetchHomeData();
   }, []);
 
-  // ডুপ্লিকেট মুক্ত ৫ জন কন্ট্রিবিউটর লজিক
   const displayContributors = (() => {
     const uniqueUsers = [];
     const seenIds = new Set();
-
-    const validApiData = (topContributors || []).filter(c => 
-      (c.name || c.displayName) && (c.photoURL || c.photo)
-    );
-
+    const validApiData = (topContributors || []).filter(c => (c.name || c.displayName) && (c.photoURL || c.photo));
     validApiData.forEach(c => {
       const id = c.uid || c._id;
       if (id && !seenIds.has(id)) {
@@ -131,7 +167,6 @@ const Home = () => {
         uniqueUsers.push(c);
       }
     });
-
     if (uniqueUsers.length < 5) {
       STATIC_CONTRIBUTORS.forEach(sc => {
         if (!seenIds.has(sc.uid) && uniqueUsers.length < 5) {
@@ -140,33 +175,36 @@ const Home = () => {
         }
       });
     }
-
     return uniqueUsers.slice(0, 5);
   })();
 
-  if (loading) return <LoadingSpinner />;
-
   return (
-    <div className="min-h-screen bg-[#01040D] text-white overflow-x-hidden">
+    // Main Background: Light Mode uses light gray, Dark Mode uses dark navy
+    <div className="min-h-screen bg-gray-50 dark:bg-[#01040D] text-gray-900 dark:text-white overflow-x-hidden transition-colors duration-300">
       
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* Background Glow - only for Dark Mode */}
+      <div className="fixed inset-0 z-0 pointer-events-none hidden dark:block">
         <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-[#40E0D0]/10 blur-[150px] rounded-full opacity-30"></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-6">
         
-        <section className="mb-24 rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
+        {/* --- SECTION 1: HERO --- */}
+        <section className="mb-24 rounded-[3rem] overflow-hidden border border-gray-200 dark:border-white/10 shadow-2xl">
           <HeroSlider slides={SLIDE_DATA} />
         </section>
 
-        {/* Trending Lessons Section */}
+        {/* --- SECTION 2: STATS --- */}
+        <Stats />
+
+        {/* --- SECTION 3: TRENDING LESSONS --- */}
         <section className="mb-32 relative">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter">
-              Trending <span className="text-[#40E0D0]">Lessons</span>
+            <h3 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-gray-900 dark:text-white">
+              Trending <span className="text-cyan-600 dark:text-[#40E0D0]">Lessons</span>
             </h3>
-            <p className="text-gray-400 mt-2 font-mono text-sm tracking-widest uppercase">Most saved by community</p>
-            <div className="w-24 h-1 bg-[#40E0D0] mx-auto mt-4 rounded-full shadow-[0_0_10px_#40E0D0]"></div>
+            <p className="text-gray-500 dark:text-gray-400 mt-2 font-mono text-sm tracking-widest uppercase">Most saved by community</p>
+            <div className="w-24 h-1 bg-cyan-600 dark:bg-[#40E0D0] mx-auto mt-4 rounded-full shadow-[0_0_10px_#40E0D0]"></div>
           </div>
 
           <Swiper
@@ -198,51 +236,56 @@ const Home = () => {
           </Swiper>
         </section>
 
-        {/* Featured Lessons Section */}
-        <section className="mb-24 px-2 relative">
+        {/* --- SECTION 4: FEATURED LESSONS --- */}
+        <section className="mb-24 px-6 relative">
           <div className="flex flex-col items-center justify-center mb-20">
-            <div className="relative group">
-              <span className="absolute -top-10 left-1/2 -translate-x-1/2 text-7xl md:text-9xl font-black text-white/[0.03] select-none tracking-[0.2em] uppercase italic pointer-events-none">
+            <div className="relative group text-center">
+              <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-7xl md:text-9xl font-black text-gray-200 dark:text-white/[0.03] select-none tracking-[0.2em] uppercase italic pointer-events-none">
                 SYSTEM
               </span>
-
-              <h3 className="relative z-10 text-4xl md:text-6xl font-[1000] uppercase italic tracking-tighter text-center">
+              <h3 className="relative z-10 text-4xl md:text-6xl font-[1000] uppercase italic tracking-tighter text-center text-gray-900 dark:text-white">
                 Featured 
-                <span className="ml-3 text-transparent bg-clip-text bg-gradient-to-r from-[#40E0D0] to-[#FF00FF] drop-shadow-[0_0_20px_rgba(64,224,208,0.4)]">
+                <span className="ml-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-[#40E0D0] dark:to-[#FF00FF] drop-shadow-md dark:drop-shadow-[0_0_20px_rgba(64,224,208,0.4)]">
                   Lessons
                 </span>
               </h3>
-
               <div className="mt-4 flex items-center justify-center gap-2">
-                <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-[#40E0D0]"></div>
-                <div className="w-2 h-2 bg-[#40E0D0] rounded-full animate-ping"></div>
-                <div className="h-[2px] w-12 bg-gradient-to-l from-transparent to-[#40E0D0]"></div>
+                <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-cyan-600 dark:to-[#40E0D0]"></div>
+                <div className="w-2 h-2 bg-cyan-600 dark:bg-[#40E0D0] rounded-full animate-ping"></div>
+                <div className="h-[2px] w-12 bg-gradient-to-l from-transparent to-cyan-600 dark:to-[#40E0D0]"></div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {featuredLessons && featuredLessons.length > 0 ? (
-              featuredLessons.map((lesson) => (
-                <FeaturedLessonCard key={lesson._id} lesson={lesson} user={user} />
+              featuredLessons.slice(0, 8).map((lesson, index) => ( 
+                <FeaturedLessonCard 
+                  key={`${lesson._id}-${index}`} 
+                  lesson={lesson} 
+                  user={user} 
+                />
               ))
             ) : (
-              <div className="col-span-full py-20 text-center border border-[#40E0D020] rounded-[3rem] bg-white/5 backdrop-blur-md">
-                <p className="text-gray-400 font-mono italic tracking-[0.3em] text-xs uppercase">
-                  Synchronizing Wisdom... <span className="text-[#40E0D0]">Awaiting New Lessons</span>
+              <div className="col-span-full py-20 text-center border border-gray-200 dark:border-[#40E0D020] rounded-[3rem] bg-white dark:bg-white/5 backdrop-blur-md">
+                <p className="text-gray-500 dark:text-gray-400 font-mono italic tracking-[0.3em] text-xs uppercase">
+                  Synchronizing Wisdom... <span className="text-cyan-600 dark:text-[#40E0D0]">Awaiting New Lessons</span>
                 </p>
               </div>
             )}
           </div>
         </section>
 
-        {/* Why Wisdom Matters Section */}
-        <section className="mb-24 relative py-20 rounded-[4rem] border border-white/20 bg-gray-900/40 overflow-hidden shadow-2xl backdrop-blur-sm">
+        {/* --- SECTION 5: CATEGORIES --- */}
+        <LessonCategories />
+
+        {/* --- SECTION 6: WHY WISDOM MATTERS --- */}
+        <section className="mb-24 relative py-20 rounded-[4rem] border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-900/40 overflow-hidden shadow-2xl backdrop-blur-sm">
           <div className="relative z-10 text-center mb-16 px-4">
-            <h3 className="text-3xl md:text-6xl font-black uppercase italic text-white">
-              Why <span className="text-[#40E0D0]">Wisdom</span> Matters
+            <h3 className="text-4xl md:text-6xl font-black uppercase italic text-gray-900 dark:text-white">
+              Why <span className="text-cyan-600 dark:text-[#40E0D0]">Wisdom</span> Matters
             </h3>
-            <div className="w-24 h-1.5 bg-[#40E0D0]/50 mx-auto mt-6 rounded-full"></div>
+            <div className="w-24 h-1.5 bg-cyan-600/50 dark:bg-[#40E0D0]/50 mx-auto mt-6 rounded-full"></div>
           </div>
 
           <div className="space-y-10">
@@ -267,17 +310,20 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Master Contributors Section */}
+        {/* --- SECTION 7: TESTIMONIALS --- */}
+        <UserTestimonials />
+
+        {/* --- SECTION 8: MASTER CONTRIBUTORS --- */}
         <section className="mb-32 relative px-2">
           <div className="relative z-10 text-center mb-20">
             <div className="inline-block">
-              <h3 className="text-4xl md:text-6xl font-black uppercase tracking-widest text-white italic">
-                Master <span className="text-[#40E0D0] drop-shadow-[0_0_15px_#40E0D0]">Contributors</span>
+              <h3 className="text-4xl md:text-6xl font-black uppercase tracking-widest text-gray-900 dark:text-white italic">
+                Master <span className="text-cyan-600 dark:text-[#40E0D0] dark:drop-shadow-[0_0_15px_#40E0D0]">Contributors</span>
               </h3>
               <div className="flex items-center mt-4">
-                <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-[#FF00FF] to-transparent rounded-full shadow-[0_0_10px_#FF00FF]"></div>
+                <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-fuchsia-600 dark:via-[#FF00FF] to-transparent rounded-full shadow-md dark:shadow-[0_0_10px_#FF00FF]"></div>
               </div>
-              <p className="mt-4 text-gray-400 font-medium tracking-[0.2em] uppercase text-xs md:text-sm">
+              <p className="mt-4 text-gray-500 dark:text-gray-400 font-medium tracking-[0.2em] uppercase text-xs md:text-sm">
                 Champions of the Wisdoms Network
               </p>
             </div>
@@ -293,6 +339,16 @@ const Home = () => {
             ))}
           </div>
         </section>
+
+        {/* --- SECTION 9: FAQ --- */}
+        <FaqSection />
+
+        {/* --- SECTION 10: NEWSLETTER --- */}
+        <Newsletter />
+
+        {/* --- SECTION 11: FINAL CTA --- */}
+        <FinalCTA />
+
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `

@@ -2,19 +2,50 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { FaLock, FaSearch, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { 
+  FaLock, FaSearch, FaChevronDown, FaChevronUp, 
+  FaMapMarkerAlt, FaCalendarAlt, FaStar, FaDollarSign, FaArrowDown 
+} from "react-icons/fa";
 import { axiosInstance } from "../utils/api";
+
+
+const ProfessionalLoader = () => (
+  <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#02040A] backdrop-blur-xl">
+    <div className="relative w-32 h-32 flex items-center justify-center">
+      <div className="absolute inset-0 border-t-2 border-cyan-500 rounded-full animate-spin"></div>
+      <div className="absolute inset-2 border-b-2 border-fuchsia-500 rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+      <div className="w-16 h-16 bg-gradient-to-tr from-cyan-400 to-fuchsia-600 rounded-full blur-xl animate-pulse opacity-50"></div>
+      <div className="absolute w-12 h-12 bg-[#02040A] rounded-full z-10"></div>
+    </div>
+    <h2 className="mt-8 text-xl font-mono font-bold tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-fuchsia-300 animate-pulse">
+      INITIALIZING_SYSTEM...
+    </h2>
+    <div className="mt-4 w-64 h-1 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 animate-[progress_1.5s_ease-in-out_infinite]"></div>
+    </div>
+    <style>{`
+      @keyframes progress {
+        0% { width: 0%; transform: translateX(-100%); }
+        50% { width: 50%; transform: translateX(0%); }
+        100% { width: 100%; transform: translateX(100%); }
+      }
+    `}</style>
+  </div>
+);
 
 const PublicLessons = ({ user }) => {
   const [lessons, setLessons] = useState([]);
   const [filteredLessons, setFilteredLessons] = useState([]);
   const [loading, setLoading] = useState(true);
+  
   const [categoryFilter, setCategoryFilter] = useState("");
   const [toneFilter, setToneFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [toneDropdownOpen, setToneDropdownOpen] = useState(false);
+
+  //  Pagination: Start with 8 items (2 Rows)
+  const [visibleCount, setVisibleCount] = useState(8); 
 
   const categoryOptions = ["Personal Growth", "Career", "Relationships", "Mindset", "Mistakes Learned"];
   const toneOptions = ["Motivational", "Sad", "Realization", "Gratitude"];
@@ -25,9 +56,9 @@ const PublicLessons = ({ user }) => {
         setLoading(true);
         const res = await axiosInstance.get("/lessons/public");
         
-        // ফিউচারিস্টিক ভাইব দেওয়ার জন্য ২ সেকেন্ড ডিলে
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 700));
 
+        
         if (Array.isArray(res.data)) {
           setLessons(res.data);
           setFilteredLessons(res.data);
@@ -51,7 +82,9 @@ const PublicLessons = ({ user }) => {
     if (categoryFilter) tempLessons = tempLessons.filter(l => l.category === categoryFilter);
     if (toneFilter) tempLessons = tempLessons.filter(l => l.emotionalTone === toneFilter);
     if (searchTerm) tempLessons = tempLessons.filter(l => l.title?.toLowerCase().includes(searchTerm.toLowerCase()));
+    
     setFilteredLessons(tempLessons);
+    setVisibleCount(8); 
   }, [categoryFilter, toneFilter, searchTerm, lessons]);
 
   const handleCategorySelect = (category) => {
@@ -64,43 +97,19 @@ const PublicLessons = ({ user }) => {
     setToneDropdownOpen(false);
   };
 
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 4);
+  };
+
   if (loading) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen bg-[#02040A] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(0,255,255,0.03),rgba(255,0,255,0.01),rgba(0,255,255,0.03))] bg-[size:100%_4px,4px_100%] pointer-events-none"></div>
-        <div className="relative flex flex-col items-center">
-          <div className="relative w-28 h-28 mb-12">
-            <div className="absolute inset-0 border-2 border-cyan-500/30 rotate-[30deg] animate-[spin_4s_linear_infinite]"></div>
-            <div className="absolute inset-0 border-2 border-fuchsia-500/30 -rotate-[60deg] animate-[spin_6s_linear_infinite]"></div>
-            <div className="absolute w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#00F6FF] top-1/2 -translate-y-1/2 animate-scan-line"></div>
-            <div className="absolute inset-6 bg-gradient-to-br from-cyan-400 to-fuchsia-600 blur-md rounded-full animate-pulse opacity-60"></div>
-          </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-mono font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-white animate-pulse">
-              Loading_PubicLessons...
-            </h2>
-            <div className="flex justify-center gap-2 mt-4">
-              <div className="w-1.5 h-6 bg-cyan-500/40 animate-[bounce_1s_infinite_0ms]"></div>
-              <div className="w-1.5 h-6 bg-cyan-500/60 animate-[bounce_1s_infinite_200ms]"></div>
-              <div className="w-1.5 h-6 bg-fuchsia-500 animate-[bounce_1s_infinite_400ms]"></div>
-            </div>
-          </div>
-        </div>
-        <style>{`
-          @keyframes scan-line {
-            0%, 100% { top: 10%; opacity: 0; }
-            50% { top: 90%; opacity: 1; }
-          }
-          .animate-scan-line {
-            animation: scan-line 2.5s ease-in-out infinite;
-          }
-        `}</style>
-      </div>
-    );
+    return <ProfessionalLoader />;
   }
 
   return (
     <div className="px-6 py-16 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 min-h-screen text-white">
+      
+      {/* Title Section */}
       <div className="relative mb-20 text-center">
         <div className="absolute left-1/2 -translate-x-1/2 -top-10 flex flex-col items-center">
            <div className="w-[1px] h-12 bg-gradient-to-b from-transparent to-cyan-400"></div>
@@ -124,7 +133,7 @@ const PublicLessons = ({ user }) => {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters Section */}
       <div className="flex flex-wrap gap-4 mb-12 justify-center items-center">
         <div className="relative z-20">
           <button
@@ -155,12 +164,12 @@ const PublicLessons = ({ user }) => {
               setCategoryDropdownOpen(false);
             }}
           >
-            <span className="text-fuchsia-300 font-semibold">{toneFilter || "All Emotional Tones"}</span>
+            <span className="text-fuchsia-300 font-semibold">{toneFilter || "All Tones"}</span>
             {toneDropdownOpen ? <FaChevronUp className="w-4 h-4 text-fuchsia-400" /> : <FaChevronDown className="w-4 h-4 text-fuchsia-400" />}
           </button>
           {toneDropdownOpen && (
             <div className="absolute top-full mt-2 w-full bg-[#05070F]/95 rounded-xl border border-fuchsia-400/50 shadow-[0_0_20px_#F600FF55] backdrop-blur-md overflow-hidden">
-              <button className="block w-full text-left px-4 py-2 text-slate-300 hover:bg-fuchsia-400/20 hover:text-fuchsia-200" onClick={() => handleToneSelect("")}>All Emotional Tones</button>
+              <button className="block w-full text-left px-4 py-2 text-slate-300 hover:bg-fuchsia-400/20 hover:text-fuchsia-200" onClick={() => handleToneSelect("")}>All Tones</button>
               {toneOptions.map((tone, idx) => (
                 <button key={idx} className="block w-full text-left px-4 py-2 text-slate-300 hover:bg-fuchsia-400/20 hover:text-fuchsia-200" onClick={() => handleToneSelect(tone)}>{tone}</button>
               ))}
@@ -172,7 +181,7 @@ const PublicLessons = ({ user }) => {
           <input
             type="text"
             placeholder="Search by title..."
-            className="w-full border border-cyan-400 bg-gray-900/40 backdrop-blur-md rounded-xl p-3 pl-10 shadow-lg focus:ring-2 focus:ring-cyan-400 outline-none"
+            className="w-full border border-cyan-400 bg-gray-900/40 backdrop-blur-md rounded-xl p-3 pl-10 shadow-lg focus:ring-2 focus:ring-cyan-400 outline-none text-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -180,50 +189,107 @@ const PublicLessons = ({ user }) => {
         </div>
       </div>
 
-      {/* Lessons Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {/* --- MAIN GRID --- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        
         {Array.isArray(filteredLessons) && filteredLessons.length > 0 ? (
-          filteredLessons.map((lesson) => {
-            const isPremiumLocked = (lesson.accessLevel === "Premium" || lesson.accessLevel === "premium") && (!user || !user.isPremium);
-            return (
-              <div
-                key={lesson._id}
-                className={`relative p-6 rounded-3xl border-2 border-cyan-500/50 bg-gray-900/30 backdrop-blur-lg shadow-lg transform transition-all duration-500 hover:scale-105 ${isPremiumLocked ? "opacity-70" : "opacity-100"}`}
-              >
-                {isPremiumLocked && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900/70 rounded-3xl backdrop-blur-md z-30">
-                    <div className="text-center p-4">
-                      <FaLock className="mx-auto text-4xl mb-3 text-yellow-400" />
-                      <p className="font-bold text-lg mb-2 text-yellow-400">Premium Lesson</p>
-                      <Link to="/pricing" className="inline-block bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-black px-5 py-2 rounded-full font-semibold">Upgrade</Link>
+           
+            filteredLessons.slice(0, visibleCount).map((lesson, idx) => {
+              const isPremiumLocked = (lesson.accessLevel === "Premium" || lesson.accessLevel === "premium") && (!user || !user.isPremium);
+              
+              return (
+                <div
+                  key={lesson._id}
+                  className={`group relative flex flex-col h-[500px] w-full p-5 rounded-[2rem] border border-cyan-500/20 bg-[#0A0F1F] backdrop-blur-lg shadow-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:border-cyan-400/50 transition-all duration-500 ${isPremiumLocked ? "opacity-80" : "opacity-100"}`}
+                >
+                  {isPremiumLocked && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#05070F]/80 rounded-[2rem] backdrop-blur-sm z-30 border border-yellow-500/20">
+                      <FaLock className="text-4xl mb-3 text-yellow-400 animate-pulse" />
+                      <p className="font-bold text-sm mb-4 text-yellow-400 uppercase tracking-widest">Premium Locked</p>
+                      <Link to="/pricing" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider hover:scale-105 transition-transform">Unlock Now</Link>
+                    </div>
+                  )}
+
+                  {/* Image */}
+                  <div className="relative h-40 w-full mb-4 overflow-hidden rounded-2xl">
+                    <img 
+                      src={lesson.image || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=600"} 
+                      alt={lesson.title} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    />
+                    <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10">
+                      <p className="text-[10px] font-mono text-cyan-300 uppercase">{lesson.category}</p>
                     </div>
                   </div>
-                )}
-                <img src={lesson.image || "/default-lesson.jpg"} alt={lesson.title} className="w-full h-48 object-cover rounded-xl mb-4" />
-                <h3 className="text-2xl font-bold mb-3 text-cyan-300">{lesson.title}</h3>
-                <p className="text-gray-300 mb-3">{lesson.description?.slice(0, 100)}...</p>
-                <div className="text-sm text-gray-400 mb-3"><span className="text-fuchsia-400 font-bold uppercase tracking-tighter mr-2">{lesson.emotionalTone}</span> • {lesson.category}</div>
-                
-                <div className="flex items-center mb-5">
-                  <img src={lesson.creatorPhoto || `https://api.dicebear.com/7.x/avataaars/svg?seed=${lesson.creatorName}`} alt="" className="w-10 h-10 rounded-full mr-3 border border-cyan-400" />
-                  <p className="text-xs font-mono text-gray-400">{lesson.creatorName || "Agent_Unknown"}</p>
-                </div>
 
-                {!isPremiumLocked && (
-                  
-                  <Link to={`/lessons/${lesson._id}`} className="block text-center bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-black py-3 rounded-xl font-bold hover:shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all">
-                    See Details
-                  </Link>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <p className="text-center text-gray-400 col-span-full text-xl mt-10 font-mono tracking-widest uppercase animate-pulse">
-            No_data_found_sync_error
-          </p>
-        )}
+                  {/* Content */}
+                  <div className="flex flex-col flex-grow">
+                    <h3 className="text-xl font-bold mb-2 text-white leading-tight line-clamp-1 group-hover:text-cyan-400 transition-colors">
+                      {lesson.title}
+                    </h3>
+                    
+                    <p className="text-gray-400 text-xs leading-relaxed line-clamp-2 mb-4">
+                      {lesson.description || "Unlock the potential within. This lesson contains vital data for your growth protocol."}
+                    </p>
+
+                    {/* Meta Info */}
+                    <div className="grid grid-cols-2 gap-2 mb-4 mt-auto">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+                        <FaDollarSign className="text-cyan-400" />
+                        <span>{lesson.price > 0 ? `$${lesson.price}` : "Free"}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+                        <FaStar className="text-yellow-400" />
+                        <span>{lesson.rating || "5.0"}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+                        <FaCalendarAlt className="text-fuchsia-400" />
+                        <span>{new Date(lesson.createdAt || Date.now()).toLocaleDateString('en-GB', {day: '2-digit', month: 'short'})}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+                        <FaMapMarkerAlt className="text-green-400" />
+                        <span className="truncate">{lesson.location || "Global"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* View Details Button */}
+                  {!isPremiumLocked && (
+                    <Link 
+                      to={`/lessons/${lesson._id}`} 
+                      className="block w-full text-center bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 border border-cyan-500/30 text-cyan-300 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-cyan-400 hover:text-black hover:border-cyan-400 transition-all duration-300"
+                    >
+                      View Details
+                    </Link>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className="col-span-full py-20 text-center border border-white/10 rounded-[3rem] bg-white/5 backdrop-blur-md">
+              <p className="text-gray-400 font-mono italic tracking-[0.3em] text-sm uppercase animate-pulse">
+                No_Data_Found_In_Sector
+              </p>
+            </div>
+          )
+        }
       </div>
+
+     
+      {filteredLessons.length > visibleCount && (
+        <div className="flex justify-center mt-16">
+          <button 
+            onClick={handleLoadMore}
+            className="group relative px-8 py-3 bg-slate-900 border border-cyan-500/30 rounded-full overflow-hidden hover:border-cyan-400 transition-all"
+          >
+            <div className="absolute inset-0 bg-cyan-500/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            <span className="relative flex items-center gap-3 text-cyan-400 font-bold tracking-widest text-xs uppercase">
+              Load More Data
+              <FaArrowDown className="group-hover:translate-y-1 transition-transform" />
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

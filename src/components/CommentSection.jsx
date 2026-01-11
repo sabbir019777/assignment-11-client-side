@@ -1,4 +1,4 @@
-// src/components/CommentSection.jsx
+
 import React, { useState } from "react";
 import { FaUserCircle, FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-hot-toast";
@@ -45,14 +45,14 @@ const CommentSection = ({ comments = [], onAddComment, currentUser }) => {
         from-cyan-400/10 via-transparent to-fuchsia-500/10
         blur-3xl pointer-events-none" />
 
-      {/* ================= TITLE ================= */}
+      {/*TITLE  */}
       <h3 className="relative text-2xl md:text-3xl font-extrabold mb-6
         bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-400
         bg-clip-text text-transparent">
         💬 Community Comments
       </h3>
 
-      {/* ================= COMMENTS LIST ================= */}
+      {/*COMMENTS LIST */}
       <div className="relative flex flex-col gap-4 max-h-96 overflow-y-auto mb-6 pr-1">
         {comments.length > 0 ? (
           comments.map((comment, idx) => (
@@ -100,7 +100,7 @@ const CommentSection = ({ comments = [], onAddComment, currentUser }) => {
         )}
       </div>
 
-      {/* ================= ADD COMMENT ================= */}
+      {/* ADD COMMENT  */}
       <form onSubmit={handleSubmit} className="relative flex gap-3">
         <input
           type="text"

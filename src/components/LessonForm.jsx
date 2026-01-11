@@ -13,7 +13,7 @@ const LessonForm = ({ initialData = {}, onSubmit, isPremiumUser = false }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // pre-fill form if initialData changes
+    
     if (initialData) {
       setTitle(initialData.title || "");
       setDescription(initialData.description || "");

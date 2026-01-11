@@ -1,4 +1,4 @@
-// src/components/CategoryDropdown.jsx
+
 import React, { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -22,7 +22,7 @@ const CategoryDropdown = ({ selectedCategory, setSelectedCategory }) => {
   return (
     <div className="relative w-full md:w-72">
       
-      {/* ================= BUTTON ================= */}
+      {/* BUTTON */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative w-full px-5 py-3 rounded-2xl
@@ -49,7 +49,7 @@ const CategoryDropdown = ({ selectedCategory, setSelectedCategory }) => {
           opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </button>
 
-      {/* ================= DROPDOWN ================= */}
+      {/* DROPDOWN  */}
 
       {isOpen && (
         <ul

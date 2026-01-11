@@ -72,7 +72,7 @@ const Profile = ({ user, isPremium }) => {
                 STATUS: {isPremium ? "PREMIUM ARCHITECT" : "STANDARD OPERATOR"}
               </p>
 
-              {/* ✅ UPDATE PROFILE BUTTON ADDED HERE */}
+              {/*  UPDATE PROFILE BUTTON ADDED HERE */}
            <div className="pt-4">
   <Link 
     to="/dashboard/update-profile" 
