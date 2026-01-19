@@ -9,9 +9,9 @@ The frontend application was showing 404 errors for three API endpoints:
 
 **Error Response:**
 ```
-GET https://digital-life-lesson-flame.vercel.app/users/top-contributors 404 (Not Found)
-GET https://digital-life-lesson-flame.vercel.app/lessons/featured 404 (Not Found)
-GET https://digital-life-lesson-flame.vercel.app/lessons/most-saved 404 (Not Found)
+GET https://assignment-11-server-side-swart.vercel.app/users/top-contributors 404 (Not Found)
+GET https://assignment-11-server-side-swart.vercel.app/lessons/featured 404 (Not Found)
+GET https://assignment-11-server-side-swart.vercel.app/lessons/most-saved 404 (Not Found)
 ```
 
 ---
@@ -33,7 +33,7 @@ GET https://digital-life-lesson-flame.vercel.app/lessons/most-saved 404 (Not Fou
    - Line 172: `export const getMostSavedLessons = async () => { ...get("/lessons/most-saved")`
 
 4. **Frontend Configuration Is Correct**
-   - [.env.local](.env.local) sets: `VITE_APP_API_URL=https://digital-life-lesson-flame.vercel.app`
+   - [.env.local](.env.local) sets: `VITE_APP_API_URL=https://assignment-11-server-side-swart.vercel.app`
    - [src/utils/api.js](src/utils/api.js) line 7-10: Correctly uses the environment variable
 
 ### ❌ The Real Issue

@@ -3,9 +3,9 @@
 ## The Problem
 Your app shows these 404 errors:
 ```
-GET https://digital-life-lesson-flame.vercel.app/users/top-contributors 404
-GET https://digital-life-lesson-flame.vercel.app/lessons/featured 404  
-GET https://digital-life-lesson-flame.vercel.app/lessons/most-saved 404
+GET https://assignment-11-server-side-swart.vercel.app/users/top-contributors 404
+GET https://assignment-11-server-side-swart.vercel.app/lessons/featured 404  
+GET https://assignment-11-server-side-swart.vercel.app/lessons/most-saved 404
 ```
 
 ## The Solution
@@ -52,16 +52,16 @@ After deploying, test these endpoints:
 
 **In Browser Console:**
 ```javascript
-// Should log: 📡 Fetching [endpoint] from: https://digital-life-lesson-flame.vercel.app/...
-fetch("https://digital-life-lesson-flame.vercel.app/users/top-contributors")
+// Should log: 📡 Fetching [endpoint] from: https://assignment-11-server-side-swart.vercel.app/...
+fetch("https://assignment-11-server-side-swart.vercel.app/users/top-contributors")
   .then(r => r.json())
   .then(d => console.log("✅ Contributors:", d))
 
-fetch("https://digital-life-lesson-flame.vercel.app/lessons/featured")
+fetch("https://assignment-11-server-side-swart.vercel.app/lessons/featured")
   .then(r => r.json())
   .then(d => console.log("✅ Featured:", d))
 
-fetch("https://digital-life-lesson-flame.vercel.app/lessons/most-saved")
+fetch("https://assignment-11-server-side-swart.vercel.app/lessons/most-saved")
   .then(r => r.json())
   .then(d => console.log("✅ Most Saved:", d))
 ```

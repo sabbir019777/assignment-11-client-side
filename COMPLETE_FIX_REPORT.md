@@ -166,7 +166,7 @@ vercel deploy --prod
 ### After Deployment (Wait 1-2 minutes)
 
 **Method 1: Browser DevTools**
-1. Open your app: https://digital-life-lesson-flame.vercel.app
+1. Open your app: https://assignment-11-server-side-swart.vercel.app
 2. Open Console (F12 → Console tab)
 3. Look for these success messages:
    - `📡 Fetching top contributors from: ...`
@@ -189,9 +189,9 @@ vercel deploy --prod
 ```javascript
 // Copy & paste in browser console
 Promise.all([
-  fetch('https://digital-life-lesson-flame.vercel.app/users/top-contributors').then(r => r.json()),
-  fetch('https://digital-life-lesson-flame.vercel.app/lessons/featured').then(r => r.json()),
-  fetch('https://digital-life-lesson-flame.vercel.app/lessons/most-saved').then(r => r.json())
+  fetch('https://assignment-11-server-side-swart.vercel.app/users/top-contributors').then(r => r.json()),
+  fetch('https://assignment-11-server-side-swart.vercel.app/lessons/featured').then(r => r.json()),
+  fetch('https://assignment-11-server-side-swart.vercel.app/lessons/most-saved').then(r => r.json())
 ]).then(data => {
   console.log("✅ All endpoints working!");
   console.log("Contributors:", data[0]);
