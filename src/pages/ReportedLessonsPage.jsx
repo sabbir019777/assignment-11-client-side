@@ -17,6 +17,7 @@ const ReportedLessonsPage = () => {
       setReportedLessons(lessonsArray);
     } catch (err) {
       console.error("Fetch Error:", err);
+      setReportedLessons([]); // Fallback to empty array if fetch fails
     } finally {
       setLoading(false);
     }
