@@ -13,6 +13,7 @@ const ReportedLessonsPage = () => {
     try {
       setLoading(true);
       const data = await getReportedLessons();
+      // Ensure we are working with an array
       const lessonsArray = Array.isArray(data) ? data : data?.data || [];
       setReportedLessons(lessonsArray);
     } catch (err) {
@@ -27,17 +28,23 @@ const ReportedLessonsPage = () => {
     fetchReported();
   }, []);
 
-  const handleRemoveFromUI = (lessonId) => {
-    setReportedLessons((prev) => prev.filter((lesson) => lesson._id !== lessonId));
+  // --- 🔥 FIXED: UI REMOVAL LOGIC ---
+  // This ensures the item disappears immediately when Resolved/Deleted
+  const handleRemoveFromUI = (deletedId) => {
+    if (!deletedId) return;
+    // Handle case if child component passes an object instead of ID string
+    const idToRemove = typeof deletedId === 'object' ? deletedId._id : deletedId;
+    
+    setReportedLessons((prev) => prev.filter((lesson) => lesson._id !== idToRemove));
   };
+  // ------------------------------------
 
   if (loading) return <LoadingPage message="Scanning for reported content..." />;
 
   return (
-
     <div className="p-8 md:p-12 bg-gray-50 dark:bg-[#0B1120] min-h-screen text-gray-800 dark:text-gray-200 selection:bg-red-500/30 font-sans relative overflow-hidden transition-colors duration-300">
       
-      {/* Background Decorative Glows (Only Visible in Dark Mode) */}
+      {/* Background Decorative Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-900/10 blur-[120px] rounded-full hidden dark:block" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full hidden dark:block" />
 

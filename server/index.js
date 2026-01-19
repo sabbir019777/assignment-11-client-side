@@ -1,4 +1,3 @@
-// index.js (বা server.js)
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
@@ -11,15 +10,13 @@ const multer = require("multer");
 const path = require("path");
 const axios = require("axios");
 
-
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.VITE_APP_CLIENT_URL || "http://localhost:5173";
-const SERVER_BASE_URL =
-  process.env.SERVER_BASE_URL || `http://localhost:${PORT}`;
+const SERVER_BASE_URL = process.env.SERVER_BASE_URL || `http://localhost:${PORT}`;
 
 const app = express();
 
-// Helmet with disabled CORS 
+// Helmet
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -53,7 +50,6 @@ app.use(cors(corsOptions));
 const uploadsDir = path.join(__dirname, "uploads");
 app.use("/uploads", express.static(uploadsDir));
 
-// upload/image
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -77,6 +73,7 @@ app.post("/upload/image", upload.single("image"), async (req, res) => {
   }
 });
 
+// Firebase Init
 try {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -102,6 +99,7 @@ try {
   console.error("Firebase Admin init failed:", error);
 }
 
+// Payment Webhook
 app.post(
   "/webhook/payment",
   express.raw({ type: "application/json" }),
@@ -210,7 +208,15 @@ const verifyAdmin = async (req, res, next) => {
   const masterAdminEmail = "admins@gmail.com"; 
   if (!email) return res.status(401).send({ message: "Unauthorized: Email not found" });
   try {
-    const user = await usersCollection.findOne({ email: email });
+    const user = await usersCollection.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+    
+    // --- FIX START: CRASH PREVENTED HERE ---
+    if (!user) {
+        // If user is not in DB, deny access immediately
+        return res.status(403).send({ message: "Forbidden: User not found" });
+    }
+    // --- FIX END ---
+
     const isAdmin = (user && user.role === "admin") || email.toLowerCase() === masterAdminEmail.toLowerCase();
     if (!isAdmin) return res.status(403).send({ message: "Forbidden Access" });
     next();
@@ -300,10 +306,8 @@ app.get("/users/top-contributors", async (req, res) => {
       { $sort: { weeklyLessons: -1 } },
       { $limit: 5 }
     ]).toArray();
-    console.log("✅ Top contributors fetched successfully:", contributors.length);
     res.status(200).send(contributors);
   } catch (error) {
-    console.error("❌ Error fetching top contributors:", error.message);
     res.status(500).send({ message: "Error fetching top contributors", error: error.message });
   }
 });
@@ -311,10 +315,8 @@ app.get("/users/top-contributors", async (req, res) => {
 app.get("/lessons/featured", async (req, res) => {
   try {
     const featured = await lessonsCollection.find({}).sort({ createdAt: -1 }).limit(8).toArray();
-    console.log("✅ Featured lessons fetched successfully:", featured.length);
     res.status(200).send(featured);
   } catch (error) {
-    console.error("❌ Error fetching featured lessons:", error.message);
     res.status(500).send({ message: "Error fetching featured lessons", error: error.message });
   }
 });
@@ -322,10 +324,8 @@ app.get("/lessons/featured", async (req, res) => {
 app.get("/lessons/most-saved", async (req, res) => {
   try {
     const mostSaved = await lessonsCollection.find({ isReviewed: true }).sort({ favoritesCount: -1, createdAt: -1 }).limit(10).toArray();
-    console.log("✅ Most saved lessons fetched successfully:", mostSaved.length);
     res.status(200).send(mostSaved);
   } catch (error) {
-    console.error("❌ Error fetching most saved lessons:", error.message);
     res.status(500).send({ message: "Error fetching most saved lessons", error: error.message });
   }
 });
@@ -352,7 +352,6 @@ app.post("/lessons", verifyJWT, async (req, res) => {
   }
 });
 
-// --- NEWLY ADDED ROUTE FOR MY LESSONS ---
 app.get("/lessons/my-lessons/:uid", verifyJWT, async (req, res) => {
   try {
     const uid = req.params.uid;
@@ -363,7 +362,106 @@ app.get("/lessons/my-lessons/:uid", verifyJWT, async (req, res) => {
     res.status(500).send({ message: "Failed to fetch my lessons" });
   }
 });
-// ----------------------------------------
+
+// User Delete My Lesson
+app.patch("/lessons/delete-my-lesson/:id", verifyJWT, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await lessonsCollection.deleteOne(query);
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to delete lesson" });
+  }
+});
+
+
+// ============================================
+// --- FIXED REPORTS & ADMIN DELETE SECTION ---
+// ============================================
+
+// 1. ADD REPORT 
+app.post("/lessons/report", verifyJWT, async (req, res) => {
+  try {
+    const report = req.body;
+    const result = await lessonsReportsCollection.insertOne({ ...report, createdAt: new Date() });
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to submit report" });
+  }
+});
+
+// 2. GET ALL REPORTS 
+app.get("/admin/reports", verifyJWT, verifyAdmin, async (req, res) => {
+  try {
+    const reports = await lessonsReportsCollection.find().toArray();
+    res.send(reports);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch reports" });
+  }
+});
+
+// 3. RESOLVE REPORT (Fixed & Secured)
+app.delete("/admin/reports/:id", verifyJWT, verifyAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) return res.status(400).send({ message: "Invalid ID" });
+
+    const result = await lessonsReportsCollection.deleteOne({ _id: new ObjectId(id) });
+    console.log("✅ Report Resolved:", id);
+    res.status(200).send({ success: true, result });
+  } catch (error) {
+    console.error("❌ Failed to resolve report:", error);
+    res.status(500).send({ message: "Failed to resolve report" });
+  }
+});
+
+// 4. ADMIN DELETE LESSON (Fixed & Secured)
+app.delete("/admin/lessons/:id", verifyJWT, verifyAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) return res.status(400).send({ message: "Invalid ID" });
+
+    const query = { _id: new ObjectId(id) };
+    const result = await lessonsCollection.deleteOne(query);
+    console.log("✅ Admin Deleted Lesson:", id); 
+    res.status(200).send({ success: true, result });
+  } catch (error) {
+    console.error("❌ Admin Delete Error:", error);
+    res.status(500).send({ message: "Failed to delete lesson" });
+  }
+});
+
+// 5. ADMIN FEATURE LESSON
+app.patch("/admin/lessons/featured/:id", verifyJWT, verifyAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) return res.status(400).send({ message: "Invalid ID" });
+
+    const filter = { _id: new ObjectId(id) };
+    const updateDoc = {
+      $set: { ...req.body } 
+    };
+    const result = await lessonsCollection.updateOne(filter, updateDoc);
+    res.send(result);
+  } catch (error) {
+     console.error("❌ Admin Feature Error:", error);
+    res.status(500).send({ message: "Failed to feature lesson" });
+  }
+});
+
+// Fallback Route for direct deletions
+app.delete("/lessons/:id", verifyJWT, verifyAdmin, async (req, res) => {
+    try {
+      if (!ObjectId.isValid(req.params.id)) return res.status(400).send({ message: "Invalid ID" });
+      const result = await lessonsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+      res.send(result);
+    } catch (err) {
+      res.status(500).send({ message: "Delete failed" });
+    }
+});
+
+// ============================================
 
 app.get("/lessons/:id", async (req, res) => {
   try {
@@ -411,10 +509,35 @@ app.post("/comments", verifyJWT, async (req, res) => {
 
 app.patch("/lessons/:id", verifyJWT, async (req, res) => {
   try {
-    const result = await lessonsCollection.updateOne({ _id: new ObjectId(req.params.id), creatorId: req.userUid }, { $set: { ...req.body, updatedAt: new Date() } });
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const requester = await usersCollection.findOne({ uid: req.userUid });
+    
+    if (requester?.role !== 'admin') {
+       filter.creatorId = req.userUid;
+    }
+    const result = await lessonsCollection.updateOne(filter, { $set: { ...req.body, updatedAt: new Date() } });
+    
+    if (result.matchedCount === 0) {
+      return res.status(403).send({ message: "Unauthorized or Lesson not found" });
+    }
+    
     res.send(result);
   } catch (error) {
     res.status(500).send({ message: "Failed" });
+  }
+});
+
+app.get("/api/lessons/favorites/:uid", verifyJWT, async (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const favorites = await favouritesCollection.find({ userId: uid }).toArray();
+    if (!favorites || favorites.length === 0) return res.send([]);
+    const lessonIds = favorites.map(fav => new ObjectId(fav.lessonId));
+    const favoriteLessons = await lessonsCollection.find({ _id: { $in: lessonIds } }).toArray();
+    res.send(favoriteLessons);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch favorite lessons" });
   }
 });
 
@@ -437,6 +560,15 @@ app.delete("/users/:id", verifyJWT, verifyAdmin, async (req, res) => {
   res.send({ success: true });
 });
 
+app.get("/admin/lessons", verifyJWT, verifyAdmin, async (req, res) => {
+  try {
+    const lessons = await lessonsCollection.find().toArray();
+    res.send(lessons);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch all lessons" });
+  }
+});
+
 app.post("/lessons/:id/like", verifyJWT, async (req, res) => {
   const lessonId = req.params.id;
   const userEmail = req.userEmail;
@@ -447,7 +579,6 @@ app.post("/lessons/:id/like", verifyJWT, async (req, res) => {
   res.send({ success: true, isLiked: !hasLiked });
 });
 
-// Listener & Roots
 app.get("/", (req, res) => res.send("✅ Digital Life Lessons Full API Running"));
 
 module.exports = app; 
