@@ -1,12 +1,13 @@
+// src/pages/admin/ReportedLessonsPage.jsx
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getReportedLessons } from "../utils/api"; 
 import LoadingPage from "./LoadingPage";
 
+
 const ReportedLessonsPage = () => {
   const [reportedLessons, setReportedLessons] = useState([]);
   const [loading, setLoading] = useState(true);
-
 
   const fetchReported = async () => {
     try {
@@ -25,45 +26,44 @@ const ReportedLessonsPage = () => {
     fetchReported();
   }, []);
 
-  const handleSafeRemove = (id) => {
-    try {
+  const handleDirectRemove = (id) => {
 
-      setReportedLessons((currentLessons) => 
-        currentLessons.filter((lesson) => lesson._id !== id)
-      );
-     
-      toast.success("Action Successful!");
-    } catch (error) {
-      console.error("Remove Error:", error);
-    }
+    setReportedLessons((currentList) => currentList.filter((item) => item._id !== id));
+    
+    
+    toast.success("Successfully Deleted!");
   };
 
   if (loading) return <LoadingPage message="Scanning for reported content..." />;
 
   return (
-    <div className="p-8 md:p-12 bg-gray-50 dark:bg-[#0B1120] min-h-screen text-gray-800 dark:text-gray-200 font-sans relative overflow-hidden">
+    <div className="p-8 md:p-12 bg-gray-50 dark:bg-[#0B1120] min-h-screen text-gray-800 dark:text-gray-200 selection:bg-red-500/30 font-sans relative overflow-hidden">
       
+      {/* Background Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-900/10 blur-[120px] rounded-full hidden dark:block" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full hidden dark:block" />
+
       <div className="max-w-[1700px] mx-auto relative z-10">
         
-        {/* Header Section */}
+        {/* Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-red-500 pl-6 py-2">
           <div>
-            <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-gray-900 dark:text-white">
+            <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-gray-900 dark:text-white drop-shadow-sm">
               Reported <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-600 italic">Content</span>
             </h1>
             <p className="text-gray-600 dark:text-gray-500 text-sm mt-2">Manage reported lessons securely.</p>
           </div>
           <div className="px-6 py-4 bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg">
-             <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Total Issues</p>
+             <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Active Issues</p>
              <p className="text-3xl font-mono font-black text-gray-900 dark:text-white">{reportedLessons.length}</p>
           </div>
         </header>
 
-        {/* Table Section */}
+        {/* Empty State */}
         {reportedLessons.length === 0 ? (
           <div className="text-center py-32 bg-white dark:bg-gray-900/20 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-white/5">
             <p className="text-gray-500 text-xl font-bold uppercase">All Clean! No Reports.</p>
-            <button onClick={fetchReported} className="mt-4 text-blue-500 underline">Refresh</button>
+            <button onClick={fetchReported} className="mt-4 text-blue-500 underline text-sm">Refresh List</button>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl shadow-xl bg-white dark:bg-gray-900/20 border border-gray-200 dark:border-white/5">
@@ -110,13 +110,13 @@ const ReportedLessonsPage = () => {
                        </span>
                     </td>
 
-                    {/* Actions Buttons */}
+                    {/* Actions Buttons - DIRECT ONCLICK */}
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-3">
                         
-                        {/*  RESOLVED BUTTON */}
+                        {/* ✅ RESOLVED BUTTON */}
                         <button
-                          onClick={() => handleSafeRemove(lesson._id)}
+                          onClick={() => handleDirectRemove(lesson._id)}
                           className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                         >
                           Resolved
@@ -124,7 +124,7 @@ const ReportedLessonsPage = () => {
 
                         {/*  DELETE BUTTON */}
                         <button
-                          onClick={() => handleSafeRemove(lesson._id)}
+                          onClick={() => handleDirectRemove(lesson._id)}
                           className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                         >
                           Delete
