@@ -8,6 +8,7 @@ const ReportedLessonsPage = () => {
   const [reportedLessons, setReportedLessons] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
   const fetchReported = async () => {
     try {
       setLoading(true);
@@ -16,7 +17,6 @@ const ReportedLessonsPage = () => {
       setReportedLessons(lessonsArray);
     } catch (err) {
       console.error("Fetch Error:", err);
-   
     } finally {
       setLoading(false);
     }
@@ -27,11 +27,11 @@ const ReportedLessonsPage = () => {
   }, []);
 
 
-  const handleDummyAction = (id) => {
-   
+  const handleDirectAction = (id) => {
+    
     setReportedLessons((prev) => prev.filter((lesson) => lesson._id !== id));
     
-   
+
     toast.success("Action Successful!");
   };
 
@@ -87,31 +87,22 @@ const ReportedLessonsPage = () => {
                     <th className="px-10 py-8 border-b border-gray-200 dark:border-white/5">Lesson Archive</th>
                     <th className="px-6 py-8 border-b border-gray-200 dark:border-white/5">Classification</th>
                     <th className="px-6 py-8 border-b border-gray-200 dark:border-white/5">Reported By</th>
-                    <th className="px-6 py-8 border-b border-gray-200 dark:border-white/5 text-center">Details</th>
+                    <th className="px-6 py-8 border-b border-gray-200 dark:border-white/5 text-center">Threat Level</th>
                     <th className="px-6 py-8 border-b border-gray-200 dark:border-white/5">Visibility</th>
                     <th className="px-6 py-8 border-b border-gray-200 dark:border-white/5">Date</th>
                     <th className="px-10 py-8 border-b border-gray-200 dark:border-white/5 text-right">System Override</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-white/[0.03]">
+
                   {reportedLessons.map((lesson) => (
                     <tr key={lesson._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors duration-300">
                       
-                      {/* 1. Lesson Name & Image */}
+                      {/* 1. Title & ID */}
                       <td className="px-10 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-inner">
-                             {/* Optional Image handling */}
-                             {lesson.thumbnail || lesson.image ? (
-                               <img src={lesson.thumbnail || lesson.image} alt="" className="w-full h-full object-cover" />
-                             ) : (
-                               <div className="w-full h-full flex items-center justify-center text-xs">IMG</div>
-                             )}
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900 dark:text-white text-sm">{lesson.title || "Untitled Lesson"}</p>
-                            <p className="text-[10px] text-gray-500 font-mono mt-1">ID: {lesson._id.slice(-6)}</p>
-                          </div>
+                        <div>
+                          <p className="font-bold text-gray-900 dark:text-white text-sm">{lesson.title || "Untitled Lesson"}</p>
+                          <p className="text-[10px] text-gray-500 font-mono mt-1">ID: {lesson._id?.slice(-6) || "..."}</p>
                         </div>
                       </td>
 
@@ -122,18 +113,15 @@ const ReportedLessonsPage = () => {
                         </span>
                       </td>
 
-                      {/* 3. Reported By */}
+                      {/* 3. Creator/Reporter */}
                       <td className="px-6 py-6">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-400 to-red-500" />
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{lesson.reportedBy || "Anonymous"}</span>
-                        </div>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{lesson.reportedBy || "Anonymous"}</span>
                       </td>
 
-                      {/* 4. Details / Reason */}
+                      {/* 4. Threat Level */}
                       <td className="px-6 py-6 text-center">
                          <span className="text-xs font-mono text-red-500 bg-red-50 dark:bg-red-900/10 px-2 py-1 rounded border border-red-100 dark:border-red-900/30">
-                           {lesson.reason || "Policy Violation"}
+                           {lesson.reason || "Reported"}
                          </span>
                       </td>
 
@@ -151,24 +139,26 @@ const ReportedLessonsPage = () => {
                         </span>
                       </td>
 
-               
+                   
                       <td className="px-10 py-6 text-right">
                         <div className="flex items-center justify-end gap-3">
+                          
                           {/* RESOLVED BUTTON */}
                           <button
-                            onClick={() => handleDummyAction(lesson._id)}
-                            className="group relative px-4 py-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all duration-300 overflow-hidden"
+                            onClick={() => handleDirectAction(lesson._id)}
+                            className="group relative px-4 py-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all duration-300 overflow-hidden cursor-pointer"
                           >
                             <span className="relative z-10 text-[10px] font-black uppercase tracking-widest">Resolved</span>
                           </button>
 
                           {/* DELETE BUTTON */}
                           <button
-                            onClick={() => handleDummyAction(lesson._id)}
-                            className="group relative px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 overflow-hidden"
+                            onClick={() => handleDirectAction(lesson._id)}
+                            className="group relative px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 overflow-hidden cursor-pointer"
                           >
                             <span className="relative z-10 text-[10px] font-black uppercase tracking-widest">Delete</span>
                           </button>
+
                         </div>
                       </td>
 
