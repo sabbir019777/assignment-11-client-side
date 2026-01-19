@@ -1,4 +1,3 @@
-// src/utils/api.js
 import axios from "axios";
 import { auth } from "../Firebase/Firebase.config";
 
@@ -6,8 +5,8 @@ import { auth } from "../Firebase/Firebase.config";
 // Base URL
 // --------------------
 const BASE_URL = (
-  import.meta.env.VITE_APP_API_URL ||
-  "https://digital-life-lesson-flame.vercel.app"
+  import.meta.env.VITE_APP_API_URL || 
+  "http://localhost:5000"
 ).replace(/\/$/, "");
 
 // --------------------
@@ -36,6 +35,7 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
 // --------------------
 // Error Handler
 // --------------------
@@ -84,10 +84,13 @@ export const getUserStatus = async (email) => {
 
 export const getTopContributors = async () => {
   try {
+    console.log("📡 Fetching top contributors from:", `${BASE_URL}/users/top-contributors`);
     const res = await axiosInstance.get("/users/top-contributors");
+    console.log("✅ Top contributors fetched successfully");
     return res.data || [];
   } catch (error) {
     handleError(error, "getTopContributors");
+    console.error("🔍 DEBUG: Endpoint - /users/top-contributors, Base URL:", BASE_URL);
     return [];
   }
 };
@@ -155,24 +158,30 @@ export const deleteLesson = async (lessonId) => {
 
 export const getFeaturedLessons = async () => {
   try {
+    console.log("📡 Fetching featured lessons from:", `${BASE_URL}/lessons/featured`);
     const res = await axiosInstance.get("/lessons/featured");
+    console.log("✅ Featured lessons fetched successfully");
     return res.data || [];
   } catch (error) {
     handleError(error, "getFeaturedLessons");
+    console.error("🔍 DEBUG: Endpoint - /lessons/featured, Base URL:", BASE_URL);
     return [];
   }
 };
 
 export const getMostSavedLessons = async () => {
   try {
+    console.log("📡 Fetching most saved lessons from:", `${BASE_URL}/lessons/most-saved`);
     const res = await axiosInstance.get("/lessons/most-saved");
+    console.log("✅ Most saved lessons fetched successfully");
     return res.data || [];
   } catch (error) {
     handleError(error, "getMostSavedLessons");
+    console.error("🔍 DEBUG: Endpoint - /lessons/most-saved, Base URL:", BASE_URL);
     return [];
   }
 };
-
+  
 // --------------------
 // SIMILAR LESSONS
 // --------------------
@@ -407,11 +416,14 @@ export const getAdminLessons = async () => {
 };
 
 
-// USER DASHBOARD STATS (NEW - ADDED) 
+// ------------------------------------------------------------------
+// USER DASHBOARD STATS (FIXED: REMOVED /api prefix)
+// ------------------------------------------------------------------
 
 export const getMyStats = async () => {
   try {
-    const res = await axiosInstance.get("/api/users/my-stats");
+    // ✅ FIX: Removed /api, now points to /users/my-stats
+    const res = await axiosInstance.get("/users/my-stats");
     return res.data || {};
   } catch (error) {
     handleError(error, "getMyStats");
@@ -421,7 +433,8 @@ export const getMyStats = async () => {
 
 export const getActivityGraph = async () => {
   try {
-    const res = await axiosInstance.get("/api/users/activity-graph");
+    // ✅ FIX: Removed /api, now points to /users/activity-graph
+    const res = await axiosInstance.get("/users/activity-graph");
     return res.data || { labels: [], data: [] };
   } catch (error) {
     handleError(error, "getActivityGraph");
