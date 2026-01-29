@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getReportedLessons } from "../utils/api";
+import { useAuth } from "../contexts/AuthContext"; 
 import LoadingPage from "./LoadingPage";
 import Swal from "sweetalert2";
 
 const ReportedLessonsPage = () => {
+  const { user } = useAuth();
   const [reportedLessons, setReportedLessons] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +19,7 @@ const ReportedLessonsPage = () => {
       setReportedLessons(lessonsArray);
     } catch (err) {
       console.error("Fetch Error:", err);
-      setReportedLessons([]); 
+      setReportedLessons([]);
     } finally {
       setLoading(false);
     }
@@ -28,30 +30,30 @@ const ReportedLessonsPage = () => {
   }, []);
 
 
-  const handleActionClick = (id) => {
+  const checkDemoSecurity = () => {
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    
-
-    const restrictedEmails = [
-        "admins@gmail.com",
-        "admin@gmail.com", 
-        "manager@gmail.com", 
-        "ta@gmail.com"
-    ];
+    const userEmail = user?.email || JSON.parse(localStorage.getItem("user"))?.email;
 
    
-    if (user && restrictedEmails.includes(user.email)) {
-       Swal.fire({
-         title: "Security Alert! 🛡️",
-         text: "This is a Demo Admin account . You cannot modify or delete live reports.",
-         icon: "error",
-         confirmButtonColor: "#EF4444",
-         background: "#111827",
-         color: "#fff",
-       });
-       return;
+    const restrictedEmails = ["admins@gmail.com"];
+
+    if (userEmail && restrictedEmails.includes(userEmail)) {
+      Swal.fire({
+        title: "Access Denied! 🛡️",
+        text: "You are in Demo Mode (Read-Only). You cannot resolve or delete live reports.",
+        icon: "warning",
+        confirmButtonColor: "#EF4444",
+        background: "#111827", 
+        color: "#fff",
+      });
+      return true;
     }
+    return false;
+  };
+
+  const handleActionClick = (id) => {
+
+    if (checkDemoSecurity()) return;
 
 
     setReportedLessons((currentList) => currentList.filter((item) => item._id !== id));

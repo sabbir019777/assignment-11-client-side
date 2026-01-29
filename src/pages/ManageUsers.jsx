@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Trash2, Loader2, ShieldCheck, User, Mail, ShieldAlert } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getAllUsers, deleteUser, updateUserRole } from "../utils/api";
+import { useAuth } from "../contexts/AuthContext";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 const ManageUsers = () => {
+  const { user } = useAuth(); 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -30,24 +32,22 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
-
-
   const checkDemoSecurity = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    
- 
-    const restrictedEmails = ["admins@gmail.com", "admin@gmail.com", "manager@gmail.com", "ta@gmail.com"];
 
-    if (user && restrictedEmails.includes(user.email)) {
-       Swal.fire({
-         title: "Security Alert! 🛡️",
-         text: "This is a Demo Admin account for LinkedIn display. You cannot modify or delete live data.",
-         icon: "error",
-         confirmButtonColor: "#EF4444",
-         background: "#01040D",
-         color: "#fff",
-       });
-       return true;
+    const userEmail = user?.email || JSON.parse(localStorage.getItem("user"))?.email;
+
+    const restrictedEmails = ["admins@gmail.com"];
+
+    if (userEmail && restrictedEmails.includes(userEmail)) {
+      Swal.fire({
+        title: "Access Denied! 🛡️",
+        text: "You are in Demo Mode (Read-Only). You cannot modify roles or delete users.",
+        icon: "warning",
+        confirmButtonColor: "#EF4444",
+        background: "#01040D", 
+        color: "#fff",
+      });
+      return true; 
     }
     return false; 
   };
@@ -56,13 +56,19 @@ const ManageUsers = () => {
 
     if (checkDemoSecurity()) return;
 
-
     setUserToDelete({ id, name });
     setModalOpen(true);
   };
 
   const confirmDelete = async () => {
     if (!userToDelete) return;
+
+   
+    if (checkDemoSecurity()) {
+        setModalOpen(false);
+        return;
+    }
+
     try {
       setActionLoading(userToDelete.id);
       await deleteUser(userToDelete.id);
@@ -80,9 +86,8 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
-
+    
     if (checkDemoSecurity()) return;
-
 
     const newRole = currentRole === "admin" ? "user" : "admin";
     try {
