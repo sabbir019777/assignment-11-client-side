@@ -15,6 +15,7 @@ const ManageUsers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
+ 
   const isDemoUser = (localStorage.getItem("user") || "").includes("admins@gmail.com");
 
   const fetchUsers = async () => {
@@ -33,44 +34,24 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
+  // --- DELETE HANDLER (FIXED) ---
   const handleDeleteClick = (id, name) => {
 
     if (isDemoUser) {
-        toast.error("You are in Demo Mode (Read-Only). You cannot resolve or delete live reports.");
+        toast.error("Demo Mode: You cannot delete users!");
         return;
     }
   
+
     setUserToDelete({ id, name });
     setModalOpen(true);
   };
 
-  const confirmDelete = async () => {
-    if (!userToDelete) return;
-
-    if (isDemoUser) {
-        setModalOpen(false);
-        toast.error("You are in Demo Mode (Read-Only). You cannot resolve or delete live reports.");
-        return;
-    }
-
-    try {
-      setActionLoading(userToDelete.id);
-      await deleteUser(userToDelete.id);
-      setUsers((prev) => prev.filter((u) => u._id !== userToDelete.id));
-      toast.success("Identity Terminated Successfully");
-    } catch (err) {
-      console.error("Delete Error:", err);
-      toast.error("Failed to delete user");
-    } finally {
-      setActionLoading(null);
-      setModalOpen(false);
-      setUserToDelete(null);
-    }
-  };
-
+  // --- ROLE UPDATE HANDLER (FIXED) ---
   const handleRoleUpdate = async (id, currentRole) => {
+
     if (isDemoUser) {
-        toast.error("⚠️ Demo Admin cannot change roles!");
+        toast.error("Demo Mode: Role update disabled!");
         return;
     }
 
@@ -86,6 +67,30 @@ const ManageUsers = () => {
       toast.error("Failed to update role");
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const confirmDelete = async () => {
+
+    if (isDemoUser) { 
+        setModalOpen(false);
+        return; 
+    }
+
+    if (!userToDelete) return;
+
+    try {
+      setActionLoading(userToDelete.id);
+      await deleteUser(userToDelete.id);
+      setUsers((prev) => prev.filter((u) => u._id !== userToDelete.id));
+      toast.success("Identity Terminated Successfully");
+    } catch (err) {
+      console.error("Delete Error:", err);
+      toast.error("Failed to delete user");
+    } finally {
+      setActionLoading(null);
+      setModalOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -152,8 +157,8 @@ const ManageUsers = () => {
                     onClick={() => handleRoleUpdate(user._id, user.role)}
                     disabled={actionLoading === user._id} 
                     className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
-                        isDemoUser 
-                        ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700" 
+                      isDemoUser 
+                        ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700 cursor-not-allowed" 
                         : "bg-white/5 hover:bg-white/10 border-white/10"
                     }`}
                   >
@@ -162,12 +167,12 @@ const ManageUsers = () => {
                     )}
                   </button>
 
-                  {/* DELETE BUTTON - Logic Updated Here via handleDeleteClick */}
+                  {/* DELETE BUTTON - Updated logic applied */}
                   <button
                     onClick={() => handleDeleteClick(user._id, user.name)}
                     className={`px-5 rounded-xl border transition-all ${
-                        isDemoUser 
-                        ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700" 
+                      isDemoUser 
+                        ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700 cursor-not-allowed" 
                         : "bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border-red-500/20"
                     }`}
                   >
