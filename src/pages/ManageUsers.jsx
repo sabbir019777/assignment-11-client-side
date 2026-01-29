@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Trash2, Loader2, ShieldCheck, User, Mail, ShieldAlert } from "lucide-react";
+import { Search, Trash2, Loader2, ShieldAlert, User, Mail } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getAllUsers, deleteUser, updateUserRole } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
@@ -32,43 +32,39 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
-  const checkDemoSecurity = () => {
-
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const rawEmail = user?.email || storedUser?.email;
-
- 
-    console.log("Current Logged In Email:", rawEmail);
-
-    if (!rawEmail) return false;
-
- 
-    const email = rawEmail.toLowerCase().trim();
-
-    const restrictedEmails = [
-      "admins@gmail.com",
-      "admin@gmail.com",
-      "demo@gmail.com"
-    ];
-
+  
+  const isDemoAdmin = () => {
     
-    if (restrictedEmails.includes(email)) {
-      Swal.fire({
-        title: "Access Denied! 🛡️",
-        text: "You are in Demo Mode (Read-Only). You cannot modify roles or delete users.",
-        icon: "warning",
-        confirmButtonColor: "#EF4444",
-        background: "#01040D",
-        color: "#fff",
-      });
-      return true; 
+    const localData = localStorage.getItem("user") || "";
+    
+
+    const contextData = JSON.stringify(user || "");
+
+
+    if (localData.includes("admins@gmail.com") || contextData.includes("admins@gmail.com")) {
+        return true;
     }
-    return false;
+    
+    return false; 
+  };
+
+  const showDemoAlert = () => {
+    Swal.fire({
+      title: "Access Denied! 🛡️",
+      text: "Demo Admin cannot delete/edit users.",
+      icon: "error",
+      confirmButtonColor: "#d33",
+      background: "#01040D",
+      color: "#fff"
+    });
   };
 
   const handleDeleteClick = (id, name) => {
-
-    if (checkDemoSecurity()) return;
+  
+    if (isDemoAdmin()) {
+        showDemoAlert();
+        return;
+    }
 
     setUserToDelete({ id, name });
     setModalOpen(true);
@@ -77,21 +73,20 @@ const ManageUsers = () => {
   const confirmDelete = async () => {
     if (!userToDelete) return;
 
-
-    if (checkDemoSecurity()) {
+    if (isDemoAdmin()) {
         setModalOpen(false);
+        showDemoAlert();
         return;
     }
 
     try {
       setActionLoading(userToDelete.id);
       await deleteUser(userToDelete.id);
-
       setUsers((prev) => prev.filter((u) => u._id !== userToDelete.id));
       toast.success("Identity Terminated Successfully");
     } catch (err) {
       console.error("Delete Error:", err);
-      toast.error("Security Override: Failed to delete user");
+      toast.error("Failed to delete user");
     } finally {
       setActionLoading(null);
       setModalOpen(false);
@@ -100,8 +95,11 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
- 
-    if (checkDemoSecurity()) return;
+
+    if (isDemoAdmin()) {
+        showDemoAlert();
+        return;
+    }
 
     const newRole = currentRole === "admin" ? "user" : "admin";
     try {
@@ -125,7 +123,6 @@ const ManageUsers = () => {
 
   return (
     <div className="p-6 md:p-10 max-w-[1400px] mx-auto min-h-screen bg-[#01040D] text-white">
-
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-black uppercase tracking-widest text-white mb-2">
           USER <span className="text-[#40E0D0]">MATRIX</span>
