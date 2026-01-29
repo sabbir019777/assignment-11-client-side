@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Trash2, Loader2, ShieldAlert, User, Mail } from "lucide-react";
+import { Search, Trash2, Loader2, ShieldAlert, User, Mail, Lock } from "lucide-react"; 
 import { toast } from "react-hot-toast";
 import { getAllUsers, deleteUser, updateUserRole } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-import Swal from "sweetalert2";
 
 const ManageUsers = () => {
   const { user } = useAuth();
@@ -15,6 +14,9 @@ const ManageUsers = () => {
   const [actionLoading, setActionLoading] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+
+
+  const isDemoUser = user?.email === "admins@gmail.com";
 
   const fetchUsers = async () => {
     try {
@@ -32,50 +34,22 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
-  
-  const isDemoAdmin = () => {
-    
-    const localData = localStorage.getItem("user") || "";
-    
-
-    const contextData = JSON.stringify(user || "");
-
-
-    if (localData.includes("admins@gmail.com") || contextData.includes("admins@gmail.com")) {
-        return true;
-    }
-    
-    return false; 
-  };
-
-  const showDemoAlert = () => {
-    Swal.fire({
-      title: "Access Denied! 🛡️",
-      text: "Demo Admin cannot delete/edit users.",
-      icon: "error",
-      confirmButtonColor: "#d33",
-      background: "#01040D",
-      color: "#fff"
-    });
-  };
-
   const handleDeleteClick = (id, name) => {
-  
-    if (isDemoAdmin()) {
-        showDemoAlert();
+   
+    if (isDemoUser) {
+        toast.error("Demo Admin cannot delete users!");
         return;
     }
-
     setUserToDelete({ id, name });
     setModalOpen(true);
   };
 
   const confirmDelete = async () => {
     if (!userToDelete) return;
-
-    if (isDemoAdmin()) {
+    
+    if (isDemoUser) {
         setModalOpen(false);
-        showDemoAlert();
+        toast.error("Action Denied: Demo Mode");
         return;
     }
 
@@ -95,9 +69,8 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
-
-    if (isDemoAdmin()) {
-        showDemoAlert();
+    if (isDemoUser) {
+        toast.error("Demo Admin cannot change roles!");
         return;
     }
 
@@ -123,6 +96,14 @@ const ManageUsers = () => {
 
   return (
     <div className="p-6 md:p-10 max-w-[1400px] mx-auto min-h-screen bg-[#01040D] text-white">
+      
+
+      {isDemoUser && (
+        <div className="bg-red-600/20 border border-red-500 text-red-500 p-4 rounded-xl mb-8 text-center font-black tracking-widest animate-pulse">
+          ⚠ DEMO MODE ACTIVE: EDIT & DELETE DISABLED ⚠
+        </div>
+      )}
+
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-black uppercase tracking-widest text-white mb-2">
           USER <span className="text-[#40E0D0]">MATRIX</span>
@@ -167,19 +148,32 @@ const ManageUsers = () => {
                 </div>
 
                 <div className="flex gap-3">
+                  {/* UPDATE ROLE BUTTON */}
                   <button
                     onClick={() => handleRoleUpdate(user._id, user.role)}
-                    disabled={actionLoading === user._id}
-                    className="flex-1 bg-white/5 hover:bg-white/10 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                    disabled={actionLoading === user._id || isDemoUser}
+                    className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                        isDemoUser 
+                        ? "bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed opacity-50" 
+                        : "bg-white/5 hover:bg-white/10 border-white/10"
+                    }`}
                   >
-                    {actionLoading === user._id ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : (user.role === 'admin' ? 'Demote' : 'Make Admin')}
+                    {isDemoUser ? <Lock className="w-4 h-4 mx-auto" /> : (
+                        actionLoading === user._id ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : (user.role === 'admin' ? 'Demote' : 'Make Admin')
+                    )}
                   </button>
 
+                  {/* DELETE BUTTON */}
                   <button
                     onClick={() => handleDeleteClick(user._id, user.name)}
-                    className="px-5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all"
+                    disabled={isDemoUser} 
+                    className={`px-5 rounded-xl border transition-all ${
+                        isDemoUser 
+                        ? "bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed opacity-50" 
+                        : "bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border-red-500/20"
+                    }`}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    {isDemoUser ? <Lock className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
                   </button>
                 </div>
               </motion.div>
