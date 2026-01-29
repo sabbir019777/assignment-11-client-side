@@ -9,6 +9,7 @@ import {
   Fingerprint, Calendar, Cpu, Zap, Radio, 
   UserPen 
 } from "lucide-react";
+import Swal from "sweetalert2"; 
 
 const AdminProfile = () => {
   const { user } = useAuth();
@@ -37,16 +38,32 @@ const AdminProfile = () => {
     fetchStats();
   }, [user]);
 
-  // --- HANDLE NAVIGATION TO UPDATE PAGE ---
   const handleUpdateClick = () => {
-   
+    
+ 
+    const restrictedEmails = ["admins@gmail.com", "admin@gmail.com", "manager@gmail.com", "ta@gmail.com"];
+
+
+    if (user && restrictedEmails.includes(user.email)) {
+       Swal.fire({
+         title: "Security Alert! 🛡️",
+         text: "This is a Demo Admin account for LinkedIn display. You cannot modify profile details.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#111827",
+         color: "#fff",
+       });
+       return;
+    }
+
+
     navigate("/dashboard/profile"); 
   };
 
   if (!user) return null;
 
   return (
-   
+    
     <div className="min-h-screen p-6 md:p-12 bg-gray-50 dark:bg-[#01040D] text-gray-800 dark:text-gray-300 selection:bg-[#40E0D0]/30 overflow-hidden relative transition-colors duration-300">
       
       {/* Background Animated Glow (Dark Mode Only) */}
@@ -57,7 +74,7 @@ const AdminProfile = () => {
 
       <div className="relative z-10 max-w-[1600px] mx-auto">
         
-   
+        {/* Header Section */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -76,13 +93,13 @@ const AdminProfile = () => {
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           
-      
+          {/* Profile Card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="xl:col-span-4 bg-white dark:bg-gray-900/40 border border-gray-200 dark:border-white/10 backdrop-blur-xl rounded-[2rem] p-8 relative group overflow-hidden shadow-2xl"
           >
-      
+            {/* Holographic Scanner Effect */}
             <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 dark:bg-[#40E0D0] opacity-20 group-hover:animate-scan z-20" />
             
             <div className="relative flex flex-col items-center">
@@ -106,7 +123,7 @@ const AdminProfile = () => {
                   Level 01_OPERATOR
                 </p>
                 
-                {/*  UPDATE PROFILE BUTTON (Redirects to Update Page) */}
+                {/* UPDATE PROFILE BUTTON (With Security Check) */}
                 <button 
                   onClick={handleUpdateClick}
                   className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-gray-900 dark:bg-white/10 hover:bg-cyan-600 dark:hover:bg-[#40E0D0] text-white hover:text-white dark:hover:text-black rounded-xl font-bold transition-all border border-transparent dark:border-white/10 group"
@@ -122,7 +139,7 @@ const AdminProfile = () => {
                       <span className="w-2 h-2 bg-green-500 rounded-full animate-ping" /> ONLINE
                     </p>
                   </div>
-                  <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/5">
+                  <div className="bg-gray-5 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/5">
                     <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Sync</p>
                     <p className="text-blue-600 dark:text-blue-400 text-xs font-mono">ENCRYPTED</p>
                   </div>
@@ -133,7 +150,7 @@ const AdminProfile = () => {
 
           <div className="xl:col-span-8 space-y-8">
             
-
+            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 { label: "Data Integrity", val: stats.totalLessons, icon: Database, color: "#40E0D0", shadow: "rgba(64,224,208,0.2)" },
@@ -154,7 +171,7 @@ const AdminProfile = () => {
               ))}
             </div>
 
-     
+            {/* System Logs */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -191,7 +208,7 @@ const AdminProfile = () => {
                 ))}
               </div>
 
-      
+              {/* Encryption Key Decoration */}
               <div className="absolute bottom-4 right-8 text-[8px] font-mono text-gray-400 dark:text-gray-800 tracking-[1em] select-none">
                 ENCRYPTION_KEY: {user.uid.slice(0, 20)}
               </div>

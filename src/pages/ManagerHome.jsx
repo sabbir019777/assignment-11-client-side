@@ -1,8 +1,17 @@
-import React from 'react';
-import { FaUsers, FaTasks, FaClipboardCheck, FaDollarSign } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaUsers, FaTasks, FaClipboardCheck, FaDollarSign, FaTrashAlt } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import Swal from 'sweetalert2';
 
 const ManagerHome = () => {
+
+
+  const [teamData, setTeamData] = useState([
+    { id: 1, name: "Rahim", task: "Frontend Fix", status: "Completed", date: "12 Jan" },
+    { id: 2, name: "Karim", task: "API Integration", status: "In Progress", date: "13 Jan" },
+    { id: 3, name: "Sabbir", task: "Database Design", status: "Pending", date: "14 Jan" },
+    { id: 4, name: "Tamim", task: "Testing", status: "Completed", date: "10 Jan" },
+  ]);
 
   const projectData = [
     { name: 'Jan', active: 40, completed: 24 },
@@ -19,13 +28,53 @@ const ManagerHome = () => {
   ];
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
+  const handleDeleteTask = (id) => {
 
-  const teamPerformance = [
-    { id: 1, name: "Rahim", task: "Frontend Fix", status: "Completed", date: "12 Jan" },
-    { id: 2, name: "Karim", task: "API Integration", status: "In Progress", date: "13 Jan" },
-    { id: 3, name: "Sabbir", task: "Database Design", status: "Pending", date: "14 Jan" },
-    { id: 4, name: "Tamim", task: "Testing", status: "Completed", date: "10 Jan" },
-  ];
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    
+    const restrictedEmails = ["admin@gmail.com", "ta@gmail.com", "tamim123@gmail.com", "manager@gmail.com"];
+
+ 
+    if (user && restrictedEmails.includes(user.email)) {
+       Swal.fire({
+         title: "Action Restricted",
+         text: "This is a Manager Demo account. You cannot delete tasks.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#1e1b2c",
+         color: "#fff",
+       });
+       return; 
+    }
+
+  
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Yes, delete task!",
+      background: "#1e1b2c",
+      color: "#fff"
+    }).then((result) => {
+      if (result.isConfirmed) {
+   
+        const remaining = teamData.filter(item => item.id !== id);
+        setTeamData(remaining);
+        
+        Swal.fire({
+            title: "Deleted!",
+            text: "Task has been removed.",
+            icon: "success",
+            background: "#1e1b2c",
+            color: "#fff"
+        });
+      }
+    });
+  };
 
   return (
     <div className="p-6 text-white min-h-screen">
@@ -109,7 +158,7 @@ const ManagerHome = () => {
         </div>
       </div>
 
-      {/* --- 3. Data Table --- */}
+      {/* --- 3. Data Table with Security --- */}
       <div className="bg-[#1e1b2c] p-6 rounded-2xl border border-gray-700 shadow-xl overflow-x-auto">
         <h3 className="text-xl font-bold mb-4 text-gray-200">Recent Team Activity</h3>
         <table className="w-full text-left border-collapse">
@@ -120,10 +169,11 @@ const ManagerHome = () => {
               <th className="p-3">Current Task</th>
               <th className="p-3">Status</th>
               <th className="p-3">Deadline</th>
+              <th className="p-3 text-center">Action</th> {/* Action Column Added */}
             </tr>
           </thead>
           <tbody>
-            {teamPerformance.map((item) => (
+            {teamData.map((item) => (
               <tr key={item.id} className="border-b border-gray-800 hover:bg-gray-800/50 transition text-gray-300">
                 <td className="p-3">#{item.id}</td>
                 <td className="p-3 font-bold text-white">{item.name}</td>
@@ -138,6 +188,16 @@ const ManagerHome = () => {
                   </span>
                 </td>
                 <td className="p-3 text-gray-400 text-sm">{item.date}</td>
+                
+                {/* Delete Button with Security */}
+                <td className="p-3 text-center">
+                    <button 
+                        onClick={() => handleDeleteTask(item.id)}
+                        className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                    >
+                        <FaTrashAlt />
+                    </button>
+                </td>
               </tr>
             ))}
           </tbody>

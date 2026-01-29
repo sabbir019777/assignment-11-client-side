@@ -11,8 +11,8 @@ const PrivateRoute = ({ children, adminOnly = false }) => {
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md">
-        <LoadingSpinner 
-          fullScreen={true} 
+        <LoadingSpinner
+          fullScreen={true}
           label="Authenticating..."
           className="text-[#40E0D0] drop-shadow-[0_0_20px_#40E0D0] animate-pulse"
         />
@@ -20,12 +20,12 @@ const PrivateRoute = ({ children, adminOnly = false }) => {
     );
   }
 
-  
+
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
- 
+
   if (adminOnly && user.role !== "admin") {
     return <Navigate to="/dashboard/dashboardhome" replace />;
   }

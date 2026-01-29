@@ -13,7 +13,7 @@ const LessonForm = ({ initialData = {}, onSubmit, isPremiumUser = false }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    
+
     if (initialData) {
       setTitle(initialData.title || "");
       setDescription(initialData.description || "");
@@ -116,9 +116,8 @@ const LessonForm = ({ initialData = {}, onSubmit, isPremiumUser = false }) => {
       <select
         value={accessLevel}
         onChange={(e) => setAccessLevel(e.target.value)}
-        className={`w-full p-4 rounded-2xl border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all ${
-          !isPremiumUser ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        className={`w-full p-4 rounded-2xl border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all ${!isPremiumUser ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         disabled={!isPremiumUser}
       >
         <option value="free">Free</option>

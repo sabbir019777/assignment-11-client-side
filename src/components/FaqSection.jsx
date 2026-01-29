@@ -4,27 +4,27 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 
 const FaqSection = () => {
   const faqs = [
-    { 
-      q: "How do I transmit a lesson?", 
+    {
+      q: "How do I transmit a lesson?",
       a: "Initiate the uplink sequence via your personal dashboard. Utilize the 'Transmit' module to securely broadcast your collective wisdom to our decentralized global neural network, ensuring your data reaches every active node instantly for shared growth."
     },
-    { 
-      q: "Is the archive secure?", 
+    {
+      q: "Is the archive secure?",
       a: "Security is our core priority. Every data packet is layered with multi-stage quantum encryption and distributed across a peer-to-peer storage mesh, making it virtually immune to unauthorized access or system breaches within the archive."
     },
-    { 
-      q: "Can I go Premium?", 
+    {
+      q: "Can I go Premium?",
       a: "Elevate your clearance level to 'Premium' through the central core interface. This protocol unlocks high-tier insights, deep-layer neural processing, and exclusive access to advanced cognitive archives reserved for evolved members."
     },
-    { 
-      q: "What is the Sync Frequency?", 
+    {
+      q: "What is the Sync Frequency?",
       a: "Our system maintains a continuous synchronization protocol. Data packets are updated across the decentralized network every 60 seconds, ensuring that all subscribers have real-time access to the latest wisdom transmissions globally."
     }
   ];
 
   return (
     <section className="mb-32 max-w-4xl mx-auto px-4 py-16">
-      
+
       {/* --- Section Header --- */}
       <div className="text-center mb-12">
         <h3 className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter mb-3">
@@ -36,8 +36,8 @@ const FaqSection = () => {
       {/* --- FAQ Smaller Grid --- */}
       <div className="space-y-4">
         {faqs.map((item, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="group relative bg-[#0A0F1E]/60 border border-white/5 rounded-[1.5rem] overflow-hidden transition-all duration-500 hover:border-[#40E0D0]/30"
           >
             {/* Animated Border Line (Hover) */}
@@ -53,7 +53,7 @@ const FaqSection = () => {
                     {item.q}
                   </h5>
                 </div>
-                
+
                 {/* Icon Toggle */}
                 <div className="text-[#FF00FF] group-hover:rotate-90 transition-transform duration-500 text-base">
                   <FaPlus className="group-hover:hidden" />

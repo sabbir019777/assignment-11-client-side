@@ -1,9 +1,9 @@
 // src/pages/admin/ReportedLessonsPage.jsx
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { getReportedLessons } from "../utils/api"; 
+import { getReportedLessons } from "../utils/api";
 import LoadingPage from "./LoadingPage";
-
+import Swal from "sweetalert2"; 
 
 const ReportedLessonsPage = () => {
   const [reportedLessons, setReportedLessons] = useState([]);
@@ -17,7 +17,7 @@ const ReportedLessonsPage = () => {
       setReportedLessons(lessonsArray);
     } catch (err) {
       console.error("Fetch Error:", err);
-      setReportedLessons([]); // Fallback to empty array if fetch fails
+      setReportedLessons([]); 
     } finally {
       setLoading(false);
     }
@@ -27,25 +27,41 @@ const ReportedLessonsPage = () => {
     fetchReported();
   }, []);
 
-  const handleDirectRemove = (id) => {
+  const handleActionClick = (id) => {
+    
+    
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+  
+    const restrictedEmails = ["admins@gmail.com", "admin@gmail.com", "manager@gmail.com", "ta@gmail.com"];
+
+    if (user && restrictedEmails.includes(user.email)) {
+       Swal.fire({
+         title: "Security Alert! 🛡️",
+         text: "This is a Demo Admin account for LinkedIn display. You cannot modify or delete live reports.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#111827", 
+         color: "#fff",
+       });
+       return; 
+    }
 
     setReportedLessons((currentList) => currentList.filter((item) => item._id !== id));
-    
-    
-    toast.success("Successfully Deleted!");
+    toast.success("Successfully Processed!");
   };
 
   if (loading) return <LoadingPage message="Scanning for reported content..." />;
 
   return (
     <div className="p-8 md:p-12 bg-gray-50 dark:bg-[#0B1120] min-h-screen text-gray-800 dark:text-gray-200 selection:bg-red-500/30 font-sans relative overflow-hidden">
-      
+
       {/* Background Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-900/10 blur-[120px] rounded-full hidden dark:block" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full hidden dark:block" />
 
       <div className="max-w-[1700px] mx-auto relative z-10">
-        
+
         {/* Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-red-500 pl-6 py-2">
           <div>
@@ -55,8 +71,8 @@ const ReportedLessonsPage = () => {
             <p className="text-gray-600 dark:text-gray-500 text-sm mt-2">Manage reported lessons securely.</p>
           </div>
           <div className="px-6 py-4 bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg">
-             <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Active Issues</p>
-             <p className="text-3xl font-mono font-black text-gray-900 dark:text-white">{reportedLessons.length}</p>
+            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Active Issues</p>
+            <p className="text-3xl font-mono font-black text-gray-900 dark:text-white">{reportedLessons.length}</p>
           </div>
         </header>
 
@@ -81,7 +97,7 @@ const ReportedLessonsPage = () => {
               <tbody className="divide-y divide-gray-200 dark:divide-white/5">
                 {reportedLessons.map((lesson) => (
                   <tr key={lesson._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
-                    
+
                     {/* Lesson Info */}
                     <td className="px-8 py-6">
                       <div>
@@ -106,26 +122,26 @@ const ReportedLessonsPage = () => {
 
                     {/* Status Badge */}
                     <td className="px-6 py-6 text-center">
-                       <span className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-3 py-1 rounded-full text-xs font-bold">
-                         {lesson.reportCount || 1} Reports
-                       </span>
+                      <span className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-3 py-1 rounded-full text-xs font-bold">
+                        {lesson.reportCount || 1} Reports
+                      </span>
                     </td>
 
-                    {/* Actions Buttons - DIRECT ONCLICK */}
+                    {/* Actions Buttons - WITH SECURITY CHECK */}
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-3">
-                        
-                        {/* ✅ RESOLVED BUTTON */}
+
+                        {/*  RESOLVED BUTTON */}
                         <button
-                          onClick={() => handleDirectRemove(lesson._id)}
+                          onClick={() => handleActionClick(lesson._id)}
                           className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                         >
                           Resolved
                         </button>
 
-                        {/*  DELETE BUTTON */}
+                        {/* DELETE BUTTON */}
                         <button
-                          onClick={() => handleDirectRemove(lesson._id)}
+                          onClick={() => handleActionClick(lesson._id)}
                           className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                         >
                           Delete

@@ -1,8 +1,8 @@
 // src/pages/Profile.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
 import { FaUserCircle, FaEnvelope, FaPhone, FaCalendarAlt, FaStar, FaCogs, FaEdit } from "react-icons/fa";
-
+import Swal from "sweetalert2"; 
 
 const formatDate = (timestamp) => {
   if (!timestamp) return "Data Nots Found";
@@ -18,8 +18,29 @@ const formatDate = (timestamp) => {
 };
 
 const Profile = ({ user, isPremium }) => {
+  const navigate = useNavigate(); 
   const creationTime = user?.metadata?.creationTime || user?.createdAt;
   
+  const handleUpdateClick = () => {
+
+    const restrictedEmails = ["admin@gmail.com", "ta@gmail.com", "tamim123@gmail.com", "manager@gmail.com"];
+
+ 
+    if (user && restrictedEmails.includes(user.email)) {
+       Swal.fire({
+         title: "Action Restricted",
+         text: "This is a demo account. You cannot modify profile details.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#111827", 
+         color: "#fff",
+       });
+       return; 
+    }
+
+    navigate("/dashboard/update-profile");
+  };
+
   if (!user) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-950 text-red-400">
@@ -72,36 +93,36 @@ const Profile = ({ user, isPremium }) => {
                 STATUS: {isPremium ? "PREMIUM ARCHITECT" : "STANDARD OPERATOR"}
               </p>
 
-              {/*  UPDATE PROFILE BUTTON ADDED HERE */}
-           <div className="pt-4">
-  <Link 
-    to="/dashboard/update-profile" 
-    className="relative inline-flex items-center gap-3 px-8 py-3 font-mono text-sm font-bold tracking-[0.15em] text-cyan-400 uppercase transition-all duration-500 group overflow-hidden"
-    style={{
-      clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)",
-      background: "rgba(6, 182, 212, 0.1)",
-      borderLeft: "2px solid #22d3ee",
-      borderRight: "2px solid #d946ef", 
-    }}
-  >
-    {/* Background Glow Effect on Hover */}
-    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-500/20 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+              {/* UPDATE PROFILE BUTTON WITH SECURITY */}
+              <div className="pt-4">
+                <button 
+                  onClick={handleUpdateClick} 
+                  className="relative inline-flex items-center gap-3 px-8 py-3 font-mono text-sm font-bold tracking-[0.15em] text-cyan-400 uppercase transition-all duration-500 group overflow-hidden"
+                  style={{
+                    clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)",
+                    background: "rgba(6, 182, 212, 0.1)",
+                    borderLeft: "2px solid #22d3ee",
+                    borderRight: "2px solid #d946ef", 
+                  }}
+                >
+                  {/* Background Glow Effect on Hover */}
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-500/20 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
 
-    {/* Scanning Line Animation */}
-    <span className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#22d3ee] -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                  {/* Scanning Line Animation */}
+                  <span className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#22d3ee] -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
 
-    {/* Icon with Glitch-like movement */}
-    <FaEdit className="relative z-10 text-lg group-hover:scale-110 group-hover:rotate-[-10deg] transition-transform duration-300" /> 
-    
-    <span className="relative z-10 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
-      Update Your Profile
-    </span>
+                  {/* Icon with Glitch-like movement */}
+                  <FaEdit className="relative z-10 text-lg group-hover:scale-110 group-hover:rotate-[-10deg] transition-transform duration-300" /> 
+                  
+                  <span className="relative z-10 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
+                    Update Your Profile
+                  </span>
 
-    {/* Decorative Corners */}
-    <span className="absolute top-0 right-0 w-1 h-4 bg-fuchsia-500 shadow-[0_0_10px_#d946ef]"></span>
-    <span className="absolute bottom-0 left-0 w-4 h-1 bg-cyan-500 shadow-[0_0_10px_#22d3ee]"></span>
-  </Link>
-</div>
+                  {/* Decorative Corners */}
+                  <span className="absolute top-0 right-0 w-1 h-4 bg-fuchsia-500 shadow-[0_0_10px_#d946ef]"></span>
+                  <span className="absolute bottom-0 left-0 w-4 h-1 bg-cyan-500 shadow-[0_0_10px_#22d3ee]"></span>
+                </button>
+              </div>
 
               <p className="text-gray-400 italic text-sm mt-4">
                 // USER ID: {user.uid} //

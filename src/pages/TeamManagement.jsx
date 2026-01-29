@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { FaEdit, FaTrash, FaUserPlus, FaEnvelope, FaBriefcase, FaTimes, FaSave, FaSearch, FaFilter, FaAngleDown, FaAngleUp, FaUsers, FaUserCheck, FaUserClock, FaLink, FaImage } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import Swal from "sweetalert2"; 
 
 const TeamManagement = () => {
   // --- 1. Data Generation Helper ---
@@ -37,7 +38,7 @@ const TeamManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   
-  //  Form Data State (Added 'photo' field)
+
   const [formData, setFormData] = useState({ name: "", role: "", email: "", status: "Active", photo: "" });
 
 
@@ -60,15 +61,49 @@ const TeamManagement = () => {
   }, [members, searchTerm, filterRole]);
 
 
-
   const handleDelete = (id) => {
-    if(window.confirm("Are you sure you want to delete this member?")) {
-      setMembers(members.filter((m) => m.id !== id));
-      toast.success("Member removed successfully!");
+ 
+    const user = JSON.parse(localStorage.getItem("user"));
+    const restrictedEmails = ["admin@gmail.com", "ta@gmail.com", "tamim123@gmail.com", "manager@gmail.com"];
+
+    if (user && restrictedEmails.includes(user.email)) {
+       Swal.fire({
+         title: "Action Restricted",
+         text: "This is a demo account. You cannot delete team members.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#1e1b2c",
+         color: "#fff",
+       });
+       return; 
     }
+
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Yes, remove member!",
+      background: "#1e1b2c",
+      color: "#fff"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setMembers(members.filter((m) => m.id !== id));
+        Swal.fire({
+            title: "Deleted!",
+            text: "Member has been removed.",
+            icon: "success",
+            background: "#1e1b2c",
+            color: "#fff"
+        });
+      }
+    });
   };
 
-  //  Edit Handler (Load existing photo into form)
+  //  Edit Handler 
   const handleEdit = (member) => {
     setCurrentUser(member);
     setFormData({ 
@@ -81,18 +116,33 @@ const TeamManagement = () => {
     setIsModalOpen(true);
   };
 
-  // Add Handler (Reset photo field)
+  // Add Handler
   const handleAddNew = () => {
     setCurrentUser(null);
     setFormData({ name: "", role: "", email: "", status: "Active", photo: "" });
     setIsModalOpen(true);
   };
 
-  //  Save Handler (Logic to use Custom Photo or Default)
+
   const handleSave = (e) => {
     e.preventDefault();
-    
 
+    const user = JSON.parse(localStorage.getItem("user"));
+    const restrictedEmails = ["admin@gmail.com", "ta@gmail.com", "tamim123@gmail.com", "manager@gmail.com"];
+
+    if (user && restrictedEmails.includes(user.email)) {
+       Swal.fire({
+         title: "Action Restricted",
+         text: "This is a demo account. You cannot add or edit team members.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#1e1b2c",
+         color: "#fff",
+       });
+       return; 
+    }
+    
+    // --- Proceed to Save ---
     const imageToUse = formData.photo.trim() !== "" 
       ? formData.photo 
       : (currentUser ? currentUser.img : `https://i.pravatar.cc/150?u=${Date.now()}`);
@@ -293,7 +343,7 @@ const TeamManagement = () => {
             
             <form onSubmit={handleSave} className="p-8 space-y-5">
               
-              {/*  New Photo URL Field */}
+              {/* New Photo URL Field */}
               <div className="col-span-2">
                 <label className="text-gray-400 text-xs uppercase font-bold mb-2 flex items-center gap-2">
                   <FaImage className="text-cyan-400"/> Profile Photo URL <span className="text-gray-600 text-[10px] lowercase">(Optional)</span>

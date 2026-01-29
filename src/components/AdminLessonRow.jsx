@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
-import { adminDeleteLesson, toggleFeatured, resolveReport } from "../utils/api"; 
+import { adminDeleteLesson, toggleFeatured, resolveReport } from "../utils/api";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { format } from "date-fns";
 import { FaTrash, FaCheckCircle, FaStar, FaRegStar } from "react-icons/fa";
@@ -14,7 +14,7 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await adminDeleteLesson(lesson._id); 
+      await adminDeleteLesson(lesson._id);
       toast.success("Lesson permanently deleted!");
       onDeleted(lesson._id);
       setShowDeleteModal(false);
@@ -29,7 +29,7 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
   const handleToggleFeatured = async () => {
     try {
       const newStatus = !isFeatured;
-      await toggleFeatured(lesson._id, newStatus); 
+      await toggleFeatured(lesson._id, newStatus);
       setIsFeatured(newStatus);
       toast.success(newStatus ? "Marked as Featured" : "Removed from Featured");
     } catch (err) {
@@ -40,7 +40,7 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
   const handleResolve = async () => {
     try {
       await resolveReport(lesson._id);
-      onResolved(lesson._id); 
+      onResolved(lesson._id);
       toast.success("Report resolved and cleared!");
     } catch (err) {
       console.error(err);
@@ -102,9 +102,9 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
 
         {/* Visibility */}
         <td className="px-4 py-4">
-           <span className={`text-xs font-bold uppercase ${lesson.accessLevel === 'premium' ? 'text-fuchsia-400' : 'text-emerald-400'}`}>
-              {lesson.accessLevel || "Free"}
-           </span>
+          <span className={`text-xs font-bold uppercase ${lesson.accessLevel === 'premium' ? 'text-fuchsia-400' : 'text-emerald-400'}`}>
+            {lesson.accessLevel || "Free"}
+          </span>
         </td>
 
         {/* Date */}
@@ -118,11 +118,10 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
             {!isReportedPage && (
               <button
                 onClick={handleToggleFeatured}
-                className={`p-2 rounded-lg transition-all border ${
-                  isFeatured 
-                  ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-500" 
+                className={`p-2 rounded-lg transition-all border ${isFeatured
+                  ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-500"
                   : "bg-slate-800 border-white/10 text-gray-400 hover:text-yellow-400"
-                }`}
+                  }`}
                 title={isFeatured ? "Unfeature" : "Make Featured"}
               >
                 {isFeatured ? <FaStar /> : <FaRegStar />}
@@ -153,12 +152,12 @@ const AdminLessonRow = ({ lesson, onDeleted, onResolved, isReportedPage = false 
         </td>
       </tr>
 
- 
+
       {showDeleteModal && (
         <ConfirmDeleteModal
           isOpen={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
-          onCancel={() => setShowDeleteModal(false)} 
+          onCancel={() => setShowDeleteModal(false)}
           onConfirm={handleDelete}
           loading={loading}
           title="Confirm Destruction"

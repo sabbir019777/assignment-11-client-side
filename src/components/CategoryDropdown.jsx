@@ -21,7 +21,7 @@ const CategoryDropdown = ({ selectedCategory, setSelectedCategory }) => {
 
   return (
     <div className="relative w-full md:w-72">
-      
+
       {/* BUTTON */}
       <button
         onClick={() => setIsOpen(!isOpen)}

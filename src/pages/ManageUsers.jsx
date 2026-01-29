@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Trash2, Loader2, ShieldCheck, User, Mail, ShieldAlert } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { getAllUsers, deleteUser, updateUserRole } from "../utils/api"; 
+import { getAllUsers, deleteUser, updateUserRole } from "../utils/api";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import Swal from "sweetalert2"; 
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -16,11 +17,10 @@ const ManageUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await getAllUsers(); //
-    
+      const data = await getAllUsers();
       setUsers(Array.isArray(data) ? data : data?.data || []);
     } catch (err) {
-      toast.error("ইউজার ডাটা লোড করা যায়নি!");
+      toast.error("Failed to load user data!");
     } finally {
       setLoading(false);
     }
@@ -31,24 +31,44 @@ const ManageUsers = () => {
   }, []);
 
 
-  const handleDeleteClick = (id, name) => {
-    setUserToDelete({ id, name }); 
-    setModalOpen(true);
+  const checkDemoSecurity = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+
+    if (user && user.email === "admin@gmail.com") {
+       Swal.fire({
+         title: "Security Alert! 🛡️",
+         text: "This is a Demo Admin account for LinkedIn display. You cannot modify or delete live data.",
+         icon: "error",
+         confirmButtonColor: "#EF4444",
+         background: "#01040D",
+         color: "#fff",
+       });
+       return true; 
+    }
+    return false;
   };
 
+  const handleDeleteClick = (id, name) => {
+
+    if (checkDemoSecurity()) return;
+
+
+    setUserToDelete({ id, name });
+    setModalOpen(true);
+  };
 
   const confirmDelete = async () => {
     if (!userToDelete) return;
     try {
       setActionLoading(userToDelete.id);
-      await deleteUser(userToDelete.id); 
-      
-   
+      await deleteUser(userToDelete.id);
+
       setUsers((prev) => prev.filter((u) => u._id !== userToDelete.id));
       toast.success("Identity Terminated Successfully");
     } catch (err) {
       console.error("Delete Error:", err);
-      toast.error("Security Override: ডিলিট করা সম্ভব হয়নি");
+      toast.error("Security Override: Failed to delete user");
     } finally {
       setActionLoading(null);
       setModalOpen(false);
@@ -56,8 +76,11 @@ const ManageUsers = () => {
     }
   };
 
-
   const handleRoleUpdate = async (id, currentRole) => {
+    
+    if (checkDemoSecurity()) return;
+
+
     const newRole = currentRole === "admin" ? "user" : "admin";
     try {
       setActionLoading(id);
@@ -67,7 +90,7 @@ const ManageUsers = () => {
       );
       toast.success(`Access Level: ${newRole.toUpperCase()}`);
     } catch (err) {
-      toast.error("রোল আপডেট করা যায়নি");
+      toast.error("Failed to update role");
     } finally {
       setActionLoading(null);
     }
@@ -80,7 +103,6 @@ const ManageUsers = () => {
 
   return (
     <div className="p-6 md:p-10 max-w-[1400px] mx-auto min-h-screen bg-[#01040D] text-white">
-      
 
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-black uppercase tracking-widest text-white mb-2">
@@ -88,7 +110,6 @@ const ManageUsers = () => {
         </h1>
         <div className="h-1 w-20 bg-[#40E0D0] mx-auto rounded-full"></div>
       </div>
-
 
       <div className="relative max-w-xl mx-auto mb-16">
         <input
@@ -134,7 +155,7 @@ const ManageUsers = () => {
                   >
                     {actionLoading === user._id ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : (user.role === 'admin' ? 'Demote' : 'Make Admin')}
                   </button>
-                  
+
                   <button
                     onClick={() => handleDeleteClick(user._id, user.name)}
                     className="px-5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all"
