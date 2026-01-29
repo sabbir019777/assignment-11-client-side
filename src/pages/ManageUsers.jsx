@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Trash2, Loader2, ShieldAlert, User, Mail, Lock } from "lucide-react"; 
 import { toast } from "react-hot-toast";
 import { getAllUsers, deleteUser, updateUserRole } from "../utils/api";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext"; 
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 const ManageUsers = () => {
@@ -16,7 +16,7 @@ const ManageUsers = () => {
   const [userToDelete, setUserToDelete] = useState(null);
 
 
-  const isDemoUser = user?.email === "admins@gmail.com";
+  const isDemoUser = (localStorage.getItem("user") || "").includes("admins@gmail.com");
 
   const fetchUsers = async () => {
     try {
@@ -35,9 +35,9 @@ const ManageUsers = () => {
   }, []);
 
   const handleDeleteClick = (id, name) => {
-   
+
     if (isDemoUser) {
-        toast.error("Demo Admin cannot delete users!");
+        toast.error("⚠️ Demo Admin cannot delete users!");
         return;
     }
     setUserToDelete({ id, name });
@@ -47,6 +47,7 @@ const ManageUsers = () => {
   const confirmDelete = async () => {
     if (!userToDelete) return;
     
+
     if (isDemoUser) {
         setModalOpen(false);
         toast.error("Action Denied: Demo Mode");
@@ -69,8 +70,9 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
+
     if (isDemoUser) {
-        toast.error("Demo Admin cannot change roles!");
+        toast.error("⚠️ Demo Admin cannot change roles!");
         return;
     }
 
@@ -96,7 +98,6 @@ const ManageUsers = () => {
 
   return (
     <div className="p-6 md:p-10 max-w-[1400px] mx-auto min-h-screen bg-[#01040D] text-white">
-      
 
       {isDemoUser && (
         <div className="bg-red-600/20 border border-red-500 text-red-500 p-4 rounded-xl mb-8 text-center font-black tracking-widest animate-pulse">
@@ -151,10 +152,11 @@ const ManageUsers = () => {
                   {/* UPDATE ROLE BUTTON */}
                   <button
                     onClick={() => handleRoleUpdate(user._id, user.role)}
-                    disabled={actionLoading === user._id || isDemoUser}
+       
+                    disabled={actionLoading === user._id} 
                     className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
                         isDemoUser 
-                        ? "bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed opacity-50" 
+                        ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700" 
                         : "bg-white/5 hover:bg-white/10 border-white/10"
                     }`}
                   >
@@ -166,10 +168,10 @@ const ManageUsers = () => {
                   {/* DELETE BUTTON */}
                   <button
                     onClick={() => handleDeleteClick(user._id, user.name)}
-                    disabled={isDemoUser} 
+
                     className={`px-5 rounded-xl border transition-all ${
                         isDemoUser 
-                        ? "bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed opacity-50" 
+                        ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700" 
                         : "bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border-red-500/20"
                     }`}
                   >
