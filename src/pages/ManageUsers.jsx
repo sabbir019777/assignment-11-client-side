@@ -8,7 +8,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import Swal from "sweetalert2";
 
 const ManageUsers = () => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -34,22 +34,36 @@ const ManageUsers = () => {
 
   const checkDemoSecurity = () => {
 
-    const userEmail = user?.email || JSON.parse(localStorage.getItem("user"))?.email;
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const rawEmail = user?.email || storedUser?.email;
 
-    const restrictedEmails = ["admins@gmail.com"];
+ 
+    console.log("Current Logged In Email:", rawEmail);
 
-    if (userEmail && restrictedEmails.includes(userEmail)) {
+    if (!rawEmail) return false;
+
+ 
+    const email = rawEmail.toLowerCase().trim();
+
+    const restrictedEmails = [
+      "admins@gmail.com",
+      "admin@gmail.com",
+      "demo@gmail.com"
+    ];
+
+    
+    if (restrictedEmails.includes(email)) {
       Swal.fire({
         title: "Access Denied! 🛡️",
         text: "You are in Demo Mode (Read-Only). You cannot modify roles or delete users.",
         icon: "warning",
         confirmButtonColor: "#EF4444",
-        background: "#01040D", 
+        background: "#01040D",
         color: "#fff",
       });
       return true; 
     }
-    return false; 
+    return false;
   };
 
   const handleDeleteClick = (id, name) => {
@@ -63,7 +77,7 @@ const ManageUsers = () => {
   const confirmDelete = async () => {
     if (!userToDelete) return;
 
-   
+
     if (checkDemoSecurity()) {
         setModalOpen(false);
         return;
@@ -86,7 +100,7 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
-    
+ 
     if (checkDemoSecurity()) return;
 
     const newRole = currentRole === "admin" ? "user" : "admin";
