@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getReportedLessons } from "../utils/api";
 import LoadingPage from "./LoadingPage";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 const ReportedLessonsPage = () => {
   const [reportedLessons, setReportedLessons] = useState([]);
@@ -27,25 +27,32 @@ const ReportedLessonsPage = () => {
     fetchReported();
   }, []);
 
+
   const handleActionClick = (id) => {
-    
-    
+
     const user = JSON.parse(localStorage.getItem("user"));
     
-  
-    const restrictedEmails = ["admins@gmail.com", "admin@gmail.com", "manager@gmail.com", "ta@gmail.com"];
 
+    const restrictedEmails = [
+        "admins@gmail.com",
+        "admin@gmail.com", 
+        "manager@gmail.com", 
+        "ta@gmail.com"
+    ];
+
+   
     if (user && restrictedEmails.includes(user.email)) {
        Swal.fire({
          title: "Security Alert! 🛡️",
-         text: "This is a Demo Admin account for LinkedIn display. You cannot modify or delete live reports.",
+         text: "This is a Demo Admin account . You cannot modify or delete live reports.",
          icon: "error",
          confirmButtonColor: "#EF4444",
-         background: "#111827", 
+         background: "#111827",
          color: "#fff",
        });
-       return; 
+       return;
     }
+
 
     setReportedLessons((currentList) => currentList.filter((item) => item._id !== id));
     toast.success("Successfully Processed!");
@@ -65,7 +72,7 @@ const ReportedLessonsPage = () => {
         {/* Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-red-500 pl-6 py-2">
           <div>
-            <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-gray-900 dark:text-white drop-shadow-sm">
+            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-gray-900 dark:text-white drop-shadow-sm">
               Reported <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-600 italic">Content</span>
             </h1>
             <p className="text-gray-600 dark:text-gray-500 text-sm mt-2">Manage reported lessons securely.</p>
@@ -131,7 +138,7 @@ const ReportedLessonsPage = () => {
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-3">
 
-                        {/*  RESOLVED BUTTON */}
+                        {/* ✅ RESOLVED BUTTON */}
                         <button
                           onClick={() => handleActionClick(lesson._id)}
                           className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"

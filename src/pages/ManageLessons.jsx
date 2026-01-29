@@ -56,7 +56,6 @@ const ManageLessons = () => {
     setFilteredLessons(result);
   }, [filterCategory, filterVisibility, searchQuery, lessons]);
 
- 
   const checkDemoSecurity = () => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     
@@ -66,7 +65,7 @@ const ManageLessons = () => {
     if (currentUser && restrictedEmails.includes(currentUser.email)) {
        Swal.fire({
          title: "Security Alert! 🛡️",
-         text: "This is a Demo Admin account for LinkedIn display. You cannot modify or delete live data.",
+         text: "This is a Demo Admin account . You cannot modify or delete live data.",
          icon: "error",
          confirmButtonColor: "#EF4444",
          background: "#111827", 
@@ -98,7 +97,7 @@ const ManageLessons = () => {
 
     if (checkDemoSecurity()) return;
 
-   
+
     if (!window.confirm("⚠️ This will permanently delete the lesson. Are you sure?")) return;
     try {
       setActionLoading(true);
@@ -132,7 +131,7 @@ const ManageLessons = () => {
               <FaBolt className="text-[#40E0D0] animate-pulse text-xs" />
               <span className="text-[10px] font-black tracking-[0.5em] text-gray-500 uppercase">System Core / Lessons</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">
+            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">
               MANAGES <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#40E0D0] to-blue-500 italic">DATABASE</span>
             </h1>
           </div>

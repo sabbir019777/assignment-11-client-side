@@ -31,11 +31,14 @@ const ManageUsers = () => {
   }, []);
 
 
+
   const checkDemoSecurity = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     
+ 
+    const restrictedEmails = ["admins@gmail.com", "admin@gmail.com", "manager@gmail.com", "ta@gmail.com"];
 
-    if (user && user.email === "admin@gmail.com") {
+    if (user && restrictedEmails.includes(user.email)) {
        Swal.fire({
          title: "Security Alert! 🛡️",
          text: "This is a Demo Admin account for LinkedIn display. You cannot modify or delete live data.",
@@ -44,9 +47,9 @@ const ManageUsers = () => {
          background: "#01040D",
          color: "#fff",
        });
-       return true; 
+       return true;
     }
-    return false;
+    return false; 
   };
 
   const handleDeleteClick = (id, name) => {
@@ -77,7 +80,7 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
-    
+
     if (checkDemoSecurity()) return;
 
 
