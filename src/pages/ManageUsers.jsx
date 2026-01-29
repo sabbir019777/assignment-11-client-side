@@ -15,7 +15,6 @@ const ManageUsers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
-
   const isDemoUser = (localStorage.getItem("user") || "").includes("admins@gmail.com");
 
   const fetchUsers = async () => {
@@ -37,20 +36,20 @@ const ManageUsers = () => {
   const handleDeleteClick = (id, name) => {
 
     if (isDemoUser) {
-        toast.error("⚠️ Demo Admin cannot delete users!");
+        toast.error("You are in Demo Mode (Read-Only). You cannot resolve or delete live reports.");
         return;
     }
+  
     setUserToDelete({ id, name });
     setModalOpen(true);
   };
 
   const confirmDelete = async () => {
     if (!userToDelete) return;
-    
 
     if (isDemoUser) {
         setModalOpen(false);
-        toast.error("Action Denied: Demo Mode");
+        toast.error("You are in Demo Mode (Read-Only). You cannot resolve or delete live reports.");
         return;
     }
 
@@ -70,7 +69,6 @@ const ManageUsers = () => {
   };
 
   const handleRoleUpdate = async (id, currentRole) => {
-
     if (isDemoUser) {
         toast.error("⚠️ Demo Admin cannot change roles!");
         return;
@@ -152,7 +150,6 @@ const ManageUsers = () => {
                   {/* UPDATE ROLE BUTTON */}
                   <button
                     onClick={() => handleRoleUpdate(user._id, user.role)}
-       
                     disabled={actionLoading === user._id} 
                     className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
                         isDemoUser 
@@ -165,10 +162,9 @@ const ManageUsers = () => {
                     )}
                   </button>
 
-                  {/* DELETE BUTTON */}
+                  {/* DELETE BUTTON - Logic Updated Here via handleDeleteClick */}
                   <button
                     onClick={() => handleDeleteClick(user._id, user.name)}
-
                     className={`px-5 rounded-xl border transition-all ${
                         isDemoUser 
                         ? "bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700" 
